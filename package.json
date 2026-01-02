@@ -1,5 +1,6 @@
 {
   "name": "@izumisy/deps2changesets",
+  "private": false,
   "version": "1.0.0",
   "description": "CLI tool to automatically generate changesets from dependency changes in Git commits",
   "type": "module",
