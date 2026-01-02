@@ -74,21 +74,6 @@ simple-dependabot-changeset --cwd /path/to/repo
 4. **Maps to workspace packages** - Uses `@manypkg/get-packages` to match files to workspace packages
 5. **Generates changesets** - Creates changesets with human-readable summaries
 
-## Example Output
-
-For a commit that updates dependencies:
-
-```
-Analyzing changes from HEAD~1 to HEAD...
-Found 2 changed file(s)
-Found 1 changed package.json file(s)
-Found 1 package(s) in workspace
-Found 2 dependency change(s) in my-package
-Creating changeset for my-package: Dependencies updated
-Created changeset with ID: fuzzy-walls-dance
-✓ Changesets created successfully!
-```
-
 Generated changeset:
 
 ```md
@@ -98,8 +83,8 @@ Generated changeset:
 
 Dependencies updated
 
-- Updated lodash (^4.17.19 -> ^4.17.21)
-- Added axios (^1.4.0)
+- Updated [lodash](https://www.npmjs.com/package/lodash) (^4.17.19 -> ^4.17.21)
+- Added [axios](https://www.npmjs.com/package/axios) (^1.4.0)
 ```
 
 ## Usecase
