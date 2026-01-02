@@ -33,11 +33,26 @@ export interface DependencyChange {
 }
 
 /**
- * Represents a package that has changes in its package.json
+ * Public package that needs a changeset
  */
-export interface ChangedPackage {
+export interface PublicChangedPackage {
+  private: false;
   /** Package information from @manypkg/get-packages */
   package: Package;
   /** List of dependency changes detected */
   dependencyChanges: DependencyChange[];
 }
+
+/**
+ * Private package that doesn't need a changeset
+ */
+export interface PrivateChangedPackage {
+  private: true;
+  /** Package information from @manypkg/get-packages */
+  package: Package;
+}
+
+/**
+ * Discriminated union for changed packages
+ */
+export type ChangedPackage = PublicChangedPackage | PrivateChangedPackage;

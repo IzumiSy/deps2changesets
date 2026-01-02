@@ -1,5 +1,5 @@
 import writeChangeset from "@changesets/write";
-import type { ChangedPackage, DependencyChange } from "./types";
+import type { PublicChangedPackage, DependencyChange } from "./types";
 
 /**
  * Generate npm package URL
@@ -47,22 +47,17 @@ function generateSummaryFromChanges(changes: DependencyChange[]): string {
  * Create changesets for changed packages
  */
 export async function createChangesets(
-  changedPackages: ChangedPackage[],
+  changedPackages: PublicChangedPackage[],
   releaseType: "patch" | "minor" | "major",
   cwd: string
 ): Promise<string[]> {
-  // Filter out private packages as they don't need changesets
-  const publicPackages = changedPackages.filter(
-    (pkg) => !pkg.package.packageJson.private
-  );
-
-  if (publicPackages.length === 0) {
+  if (changedPackages.length === 0) {
     return [];
   }
 
   const changesetIds: string[] = [];
 
-  for (const changedPackage of publicPackages) {
+  for (const changedPackage of changedPackages) {
     const summary = generateSummaryFromChanges(
       changedPackage.dependencyChanges
     );

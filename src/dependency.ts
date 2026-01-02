@@ -72,17 +72,23 @@ export class DependencyChangeAnalyzer {
         continue;
       }
 
+      // Skip private packages early, no need to analyze dependencies
+      if (pkg.packageJson.private) {
+        changedPackages.push({
+          private: true,
+          package: pkg,
+        });
+        continue;
+      }
+
       const dependencyChanges = await this.analyzeDependencyChanges(file.path);
       if (dependencyChanges.length === 0) {
         continue;
       }
 
       changedPackages.push({
-        package: {
-          dir: pkg.dir,
-          relativeDir: pkg.relativeDir,
-          packageJson: pkg.packageJson,
-        },
+        private: false,
+        package: pkg,
         dependencyChanges,
       });
     }

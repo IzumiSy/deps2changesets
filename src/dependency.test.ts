@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, assert } from "vitest";
 import { DependencyChangeAnalyzer } from "./dependency";
 import { createChangesets } from "./changeset";
 import type { IGitClient } from "./interfaces";
@@ -68,11 +68,14 @@ describe("DependencyChangeAnalyzer", () => {
       const result = await analyzer.detectChangedPackages("/test");
 
       expect(result).toHaveLength(1);
-      expect(result[0].dependencyChanges).toHaveLength(1);
-      expect(result[0].dependencyChanges[0].name).toBe("lodash");
-      expect(result[0].dependencyChanges[0].type).toBe("updated");
-      expect(result[0].dependencyChanges[0].oldVersion).toBe("^4.17.19");
-      expect(result[0].dependencyChanges[0].newVersion).toBe("^4.17.21");
+      const pkg = result[0];
+      expect(pkg.private).toBe(false);
+      assert(pkg.private === false);
+      expect(pkg.dependencyChanges).toHaveLength(1);
+      expect(pkg.dependencyChanges[0].name).toBe("lodash");
+      expect(pkg.dependencyChanges[0].type).toBe("updated");
+      expect(pkg.dependencyChanges[0].oldVersion).toBe("^4.17.19");
+      expect(pkg.dependencyChanges[0].newVersion).toBe("^4.17.21");
     });
 
     it("should return empty array when no package.json files changed", async () => {
@@ -121,9 +124,11 @@ describe("DependencyChangeAnalyzer", () => {
       const result = await analyzer.detectChangedPackages("/test");
 
       expect(result).toHaveLength(1);
-      expect(result[0].dependencyChanges).toHaveLength(1);
-      expect(result[0].dependencyChanges[0].type).toBe("added");
-      expect(result[0].dependencyChanges[0].newVersion).toBe("^4.17.21");
+      const pkg = result[0];
+      assert(pkg.private === false);
+      expect(pkg.dependencyChanges).toHaveLength(1);
+      expect(pkg.dependencyChanges[0].type).toBe("added");
+      expect(pkg.dependencyChanges[0].newVersion).toBe("^4.17.21");
     });
 
     it("should detect removed dependency", async () => {
@@ -157,9 +162,11 @@ describe("DependencyChangeAnalyzer", () => {
       const result = await analyzer.detectChangedPackages("/test");
 
       expect(result).toHaveLength(1);
-      expect(result[0].dependencyChanges).toHaveLength(1);
-      expect(result[0].dependencyChanges[0].type).toBe("removed");
-      expect(result[0].dependencyChanges[0].oldVersion).toBe("^4.17.21");
+      const pkg = result[0];
+      assert(pkg.private === false);
+      expect(pkg.dependencyChanges).toHaveLength(1);
+      expect(pkg.dependencyChanges[0].type).toBe("removed");
+      expect(pkg.dependencyChanges[0].oldVersion).toBe("^4.17.21");
     });
   });
 });
@@ -175,6 +182,7 @@ describe("createChangesets", () => {
   it("should create changeset for changed packages", async () => {
     const changedPackages = [
       {
+        private: false as const,
         package: {
           dir: "/test",
           relativeDir: ".",
@@ -216,6 +224,7 @@ describe("createChangesets", () => {
   it("should handle multiple packages in monorepo", async () => {
     const changedPackages = [
       {
+        private: false as const,
         package: {
           dir: "/test/packages/pkg-a",
           relativeDir: "packages/pkg-a",
@@ -231,6 +240,7 @@ describe("createChangesets", () => {
         ],
       },
       {
+        private: false as const,
         package: {
           dir: "/test/packages/pkg-b",
           relativeDir: "packages/pkg-b",
