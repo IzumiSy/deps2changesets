@@ -1,4 +1,4 @@
-import type { ChangedPackage, DependencyChange } from "./types";
+import type { PublicChangedPackage, DependencyChange } from "./types";
 
 // ANSI color codes
 const colors = {
@@ -30,7 +30,13 @@ function formatDependencyChange(change: DependencyChange): string {
 /**
  * Render all changed packages with their dependency changes
  */
-export function renderChangedPackages(changedPackages: ChangedPackage[]): void {
+export function renderChangedPackages(
+  changedPackages: PublicChangedPackage[]
+): void {
+  if (changedPackages.length === 0) {
+    return;
+  }
+
   for (const pkg of changedPackages) {
     console.log(`\n${pkg.package.packageJson.name}`);
     for (const change of pkg.dependencyChanges) {

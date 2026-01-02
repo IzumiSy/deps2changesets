@@ -73,34 +73,29 @@ const main = defineCommand({
     // Detect changed packages
     const changedPackages = await analyzer.detectChangedPackages(cwd);
 
-    if (changedPackages.length === 0) {
-      renderResult(0, dryRun);
-      return;
+    const publicPackages = changedPackages.filter((pkg) => !pkg.private);
+    const privateCount = changedPackages.filter((pkg) => pkg.private).length;
+
+    // Log skipped private packages (once, regardless of outcome)
+    if (privateCount > 0) {
+      console.log(
+        `ℹ Skipped ${privateCount} private package(s) (changesets not needed)`
+      );
     }
 
     // Render the changes
-    renderChangedPackages(changedPackages);
+    renderChangedPackages(publicPackages);
 
     // Create changesets (unless dry-run)
-    let createdCount = changedPackages.length;
     if (!dryRun) {
-      const changesetIds = await createChangesets(
-        changedPackages,
+      await createChangesets(
+        publicPackages,
         releaseType as "patch" | "minor" | "major",
         cwd
       );
-      createdCount = changesetIds.length;
-
-      // Warn if some packages were skipped (private packages)
-      const skippedCount = changedPackages.length - createdCount;
-      if (skippedCount > 0) {
-        console.log(
-          `ℹ Skipped ${skippedCount} private package(s) (changesets not needed)`
-        );
-      }
     }
 
-    renderResult(createdCount, dryRun);
+    renderResult(publicPackages.length, dryRun);
   },
 });
 
