@@ -9,6 +9,9 @@
     "deps2changesets": "./dist/cli.mjs",
     "deps2cs": "./dist/cli.mjs"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "test": "vitest run",
