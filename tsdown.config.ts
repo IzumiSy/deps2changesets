@@ -6,7 +6,5 @@ export default defineConfig({
   },
   format: 'esm',
   dts: false,
-  outDir: 'dist',
-  clean: true,
   target: 'node20',
 });
