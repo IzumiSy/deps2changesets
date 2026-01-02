@@ -1,5 +1,5 @@
-import { simpleGit, SimpleGit } from 'simple-git';
-import type { IGitClient } from '../interfaces';
+import { simpleGit, SimpleGit } from "simple-git";
+import type { IGitClient } from "./interfaces";
 
 /**
  * Adapter for local Git operations using simple-git
@@ -16,10 +16,10 @@ export class GitClientAdapter implements IGitClient {
     toRef: string
   ): Promise<Array<{ path: string; status: string }>> {
     const diff = await this.git.diffSummary([fromRef, toRef]);
-    return diff.files.map(file => ({
+    return diff.files.map((file) => ({
       path: file.file,
       status: this.mapGitStatusToStatus(
-        'insertions' in file ? file : { insertions: 0, deletions: 0 }
+        "insertions" in file ? file : { insertions: 0, deletions: 0 }
       ),
     }));
   }
@@ -32,21 +32,27 @@ export class GitClientAdapter implements IGitClient {
     }
   }
 
-  async getCommits(fromRef: string, toRef: string): Promise<Array<{ message: string }>> {
+  async getCommits(
+    fromRef: string,
+    toRef: string
+  ): Promise<Array<{ message: string }>> {
     const log = await this.git.log({ from: fromRef, to: toRef });
-    return log.all.map(commit => ({ message: commit.message }));
+    return log.all.map((commit) => ({ message: commit.message }));
   }
 
-  private mapGitStatusToStatus(file: { insertions?: number; deletions?: number }): string {
+  private mapGitStatusToStatus(file: {
+    insertions?: number;
+    deletions?: number;
+  }): string {
     const insertions = file.insertions ?? 0;
     const deletions = file.deletions ?? 0;
 
     if (insertions > 0 && deletions === 0) {
-      return 'added';
+      return "added";
     } else if (insertions === 0 && deletions > 0) {
-      return 'removed';
+      return "removed";
     } else {
-      return 'modified';
+      return "modified";
     }
   }
 }
