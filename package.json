@@ -1,0 +1,42 @@
+{
+  "name": "simple-dependabot-changeset",
+  "version": "1.0.0",
+  "description": "CLI tool to automatically generate changesets from dependency changes in Git commits",
+  "type": "module",
+  "main": "dist/cli.mjs",
+  "bin": {
+    "simple-dependabot-changeset": "./dist/cli.mjs"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "changesets",
+    "dependabot",
+    "dependencies",
+    "monorepo",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@changesets/write": "^0.3.2",
+    "@manypkg/get-packages": "^2.2.2",
+    "citty": "^0.1.6",
+    "simple-git": "^3.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.9",
+    "memfs": "^4.51.1",
+    "prettier": "^3.4.2",
+    "tsdown": "^0.18.4",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": "24.x"
+  }
+}
