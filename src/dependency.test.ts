@@ -31,7 +31,6 @@ describe("DependencyChangeAnalyzer", () => {
     mockGitClient = {
       getChangedFiles: vi.fn(),
       getFileContent: vi.fn(),
-      getCommits: vi.fn(),
     };
   });
 
@@ -161,40 +160,6 @@ describe("DependencyChangeAnalyzer", () => {
       expect(result[0].dependencyChanges).toHaveLength(1);
       expect(result[0].dependencyChanges[0].type).toBe("removed");
       expect(result[0].dependencyChanges[0].oldVersion).toBe("^4.17.21");
-    });
-  });
-
-  describe("checkForExistingChangeset", () => {
-    it("should return true when changeset commit exists", async () => {
-      vi.mocked(mockGitClient.getCommits).mockResolvedValue([
-        { message: "[add changeset] Update dependencies" },
-      ]);
-
-      const analyzer = new DependencyChangeAnalyzer(
-        mockGitClient,
-        "HEAD~1",
-        "HEAD"
-      );
-      const result =
-        await analyzer.checkForExistingChangeset("[add changeset]");
-
-      expect(result).toBe(true);
-    });
-
-    it("should return false when no changeset commit exists", async () => {
-      vi.mocked(mockGitClient.getCommits).mockResolvedValue([
-        { message: "chore: update dependencies" },
-      ]);
-
-      const analyzer = new DependencyChangeAnalyzer(
-        mockGitClient,
-        "HEAD~1",
-        "HEAD"
-      );
-      const result =
-        await analyzer.checkForExistingChangeset("[add changeset]");
-
-      expect(result).toBe(false);
     });
   });
 });

@@ -48,7 +48,6 @@ simple-dependabot-changeset main..
 |--------|-------------|---------|
 | `[range]` | Git commit range (e.g., `main..HEAD`, `a1b2c3..d4e5f6`) | `main..HEAD` |
 | `--releaseType` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
-| `--prefix` | Commit message prefix to check for existing changesets | `[add changeset]` |
 | `--cwd` | Working directory | Current directory |
 
 ### Examples
@@ -63,9 +62,6 @@ simple-dependabot-changeset HEAD~3..HEAD
 # Generate minor changesets
 simple-dependabot-changeset main..HEAD --releaseType minor
 
-# Use custom prefix for detecting existing changesets
-simple-dependabot-changeset --prefix "[changeset]"
-
 # Run in a specific directory
 simple-dependabot-changeset --cwd /path/to/repo
 ```
@@ -76,8 +72,7 @@ simple-dependabot-changeset --cwd /path/to/repo
 2. **Filters package.json files** - Identifies which packages have dependency changes
 3. **Parses diffs** - Extracts dependency changes (added/updated/removed) from package.json files
 4. **Maps to workspace packages** - Uses `@manypkg/get-packages` to match files to workspace packages
-5. **Checks for existing changesets** - Skips if a changeset commit already exists
-6. **Generates changesets** - Creates changesets with human-readable summaries
+5. **Generates changesets** - Creates changesets with human-readable summaries
 
 ## Example Output
 

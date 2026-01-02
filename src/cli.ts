@@ -3,7 +3,7 @@ import { defineCommand, runMain } from "citty";
 import { DependencyChangeAnalyzer } from "./dependency";
 import { createChangesets } from "./changeset";
 import { GitClientAdapter } from "./git";
-import { consoleLogger } from "./interfaces";
+import { renderChangedPackages, renderResult } from "./renderer";
 
 /**
  * Parse a Git range string (e.g., "a..b") into from/to refs.
@@ -41,19 +41,19 @@ const main = defineCommand({
       default: "patch",
       valueHint: "patch|minor|major",
     },
-    prefix: {
-      type: "string",
-      description: "Commit message prefix to check for existing changesets",
-      default: "[add changeset]",
-    },
     cwd: {
       type: "string",
       description: "Working directory",
       default: process.cwd(),
     },
+    dryRun: {
+      type: "boolean",
+      description: "Preview changes without creating changesets",
+      default: false,
+    },
   },
   async run({ args }) {
-    const { range, releaseType, prefix, cwd } = args;
+    const { range, releaseType, cwd, dryRun } = args;
     const { from, to } = parseGitRange(range);
 
     // Validate release type
@@ -63,52 +63,34 @@ const main = defineCommand({
       );
     }
 
-    console.log(`Analyzing changes from ${from} to ${to}...`);
-
-    // Initialize analyzer with Git adapter and console logger
+    // Initialize analyzer with Git adapter
     const analyzer = new DependencyChangeAnalyzer(
       new GitClientAdapter(cwd),
       from,
-      to,
-      consoleLogger
+      to
     );
 
     // Detect changed packages
     const changedPackages = await analyzer.detectChangedPackages(cwd);
 
     if (changedPackages.length === 0) {
-      console.log("No package.json dependency changes detected.");
+      renderResult(0, dryRun);
       return;
     }
 
-    console.log(
-      `Found ${changedPackages.length} package(s) with dependency changes:`
-    );
-    for (const pkg of changedPackages) {
-      console.log(
-        `  - ${pkg.package.packageJson.name}: ${pkg.dependencyChanges.length} change(s)`
+    // Render the changes
+    renderChangedPackages(changedPackages);
+
+    // Create changesets (unless dry-run)
+    if (!dryRun) {
+      await createChangesets(
+        changedPackages,
+        releaseType as "patch" | "minor" | "major",
+        cwd
       );
     }
 
-    // Check for existing changeset commits
-    const hasChangesetCommit = await analyzer.checkForExistingChangeset(prefix);
-
-    if (hasChangesetCommit) {
-      console.log(
-        "Changeset commit already exists in this range. Skipping creation."
-      );
-      return;
-    }
-
-    // Create changesets
-    await createChangesets(
-      changedPackages,
-      releaseType as "patch" | "minor" | "major",
-      cwd,
-      consoleLogger
-    );
-
-    console.log("✓ Changesets created successfully!");
+    renderResult(changedPackages.length, dryRun);
   },
 });
 

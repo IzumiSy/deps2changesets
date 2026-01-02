@@ -32,14 +32,6 @@ export class GitClientAdapter implements IGitClient {
     }
   }
 
-  async getCommits(
-    fromRef: string,
-    toRef: string
-  ): Promise<Array<{ message: string }>> {
-    const log = await this.git.log({ from: fromRef, to: toRef });
-    return log.all.map((commit) => ({ message: commit.message }));
-  }
-
   private mapGitStatusToStatus(file: {
     insertions?: number;
     deletions?: number;

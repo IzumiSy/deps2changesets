@@ -1,5 +1,4 @@
 import writeChangeset from "@changesets/write";
-import { silentLogger, type ILogger } from "./interfaces";
 import type { ChangedPackage, DependencyChange } from "./types";
 
 /**
@@ -38,11 +37,9 @@ function generateSummaryFromChanges(changes: DependencyChange[]): string {
 export async function createChangesets(
   changedPackages: ChangedPackage[],
   releaseType: "patch" | "minor" | "major",
-  cwd: string,
-  logger: ILogger = silentLogger
+  cwd: string
 ): Promise<string[]> {
   if (changedPackages.length === 0) {
-    logger.info("No packages to create changesets for");
     return [];
   }
 
@@ -51,9 +48,6 @@ export async function createChangesets(
   for (const changedPackage of changedPackages) {
     const summary = generateSummaryFromChanges(
       changedPackage.dependencyChanges
-    );
-    logger.info(
-      `Creating changeset for ${changedPackage.package.packageJson.name}: ${summary.split("\n")[0]}`
     );
 
     const changesetId = await writeChangeset(
@@ -70,7 +64,6 @@ export async function createChangesets(
     );
 
     changesetIds.push(changesetId);
-    logger.info(`Created changeset with ID: ${changesetId}`);
   }
 
   return changesetIds;

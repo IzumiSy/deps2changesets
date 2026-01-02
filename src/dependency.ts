@@ -1,6 +1,6 @@
 import path from "path";
 import { getPackages, type Package } from "@manypkg/get-packages";
-import { silentLogger, type IGitClient, type ILogger } from "./interfaces";
+import type { IGitClient } from "./interfaces";
 import type { ChangedPackage, PackageJson, DependencyChange } from "./types";
 
 /**
@@ -49,8 +49,7 @@ export class DependencyChangeAnalyzer {
   constructor(
     private readonly client: IGitClient,
     private readonly fromRef: string,
-    private readonly toRef: string,
-    private readonly logger: ILogger = silentLogger
+    private readonly toRef: string
   ) {}
 
   /**
@@ -65,17 +64,12 @@ export class DependencyChangeAnalyzer {
     // Get all packages in the workspace
     const workspacePackages = await WorkspacePackages.load(cwd);
 
-    this.logger.info(
-      `Found ${workspacePackages.count()} package(s) in workspace`
-    );
-
     // Match changed package.json files to workspace packages
     const changedPackages: ChangedPackage[] = [];
 
     for (const file of packageJsonFiles) {
       const pkg = workspacePackages.findByFilePath(file.path);
       if (!pkg) {
-        this.logger.warn(`Could not find package for ${file.path}`);
         continue;
       }
 
@@ -83,10 +77,6 @@ export class DependencyChangeAnalyzer {
       if (dependencyChanges.length === 0) {
         continue;
       }
-
-      this.logger.info(
-        `Found ${dependencyChanges.length} dependency change(s) in ${pkg.packageJson.name}`
-      );
 
       changedPackages.push({
         package: {
@@ -119,8 +109,7 @@ export class DependencyChangeAnalyzer {
 
       // Compare package.json files to detect dependency changes
       return this.comparePackageJsons(basePackageJson, headPackageJson);
-    } catch (error) {
-      this.logger.warn(`Failed to analyze ${filePath}: ${error}`);
+    } catch {
       return [];
     }
   }
@@ -131,13 +120,8 @@ export class DependencyChangeAnalyzer {
   private async getChangedPackageJsonFiles(): Promise<
     Array<{ path: string; status: string }>
   > {
-    this.logger.info(
-      `Analyzing changes from ${this.fromRef} to ${this.toRef}...`
-    );
-
     // Get all changed files in the commit range
     const files = await this.client.getChangedFiles(this.fromRef, this.toRef);
-    this.logger.info(`Found ${files.length} changed file(s)`);
 
     // Filter for package.json files
     const packageJsonFiles = files.filter(
@@ -146,19 +130,7 @@ export class DependencyChangeAnalyzer {
         (file.status === "modified" || file.status === "added")
     );
 
-    this.logger.info(
-      `Found ${packageJsonFiles.length} changed package.json file(s)`
-    );
-
     return packageJsonFiles;
-  }
-
-  /**
-   * Check if a changeset commit already exists in Git commit range
-   */
-  async checkForExistingChangeset(prefix: string): Promise<boolean> {
-    const commits = await this.client.getCommits(this.fromRef, this.toRef);
-    return commits.some((commit) => commit.message.startsWith(prefix));
   }
 
   /**
