@@ -28,22 +28,22 @@ importers:
         version: 3.30.0
     devDependencies:
       '@types/node':
-        specifier: ^20.17.9
+        specifier: ^20.19.27
         version: 20.19.27
       memfs:
         specifier: ^4.51.1
         version: 4.51.1
       prettier:
-        specifier: ^3.4.2
+        specifier: ^3.7.4
         version: 3.7.4
       tsdown:
         specifier: ^0.18.4
         version: 0.18.4(typescript@5.9.3)
       typescript:
-        specifier: ^5.7.2
+        specifier: ^5.9.3
         version: 5.9.3
       vitest:
-        specifier: ^2.1.8
+        specifier: ^2.1.9
         version: 2.1.9(@types/node@20.19.27)
 
 packages:
