@@ -4,25 +4,23 @@ CLI tool to automatically generate changesets from dependency changes in Git com
 
 ## Features
 
-- 🔍 **Automatic package detection** - Detects all packages with dependency changes
+- 🔍 **Package detection** - Detects all packages with dependency changes
+- 📝 **Changeset generation** - Parses package.json diffs to create meaningful changeset summaries
 - 📦 **Monorepo support** - Works with npm/yarn/pnpm workspaces using `@manypkg/get-packages`
-- 📝 **Smart changeset generation** - Parses package.json diffs to create meaningful changeset summaries
-- 🔄 **Grouped updates** - Handles multiple dependency updates across packages
-- ✅ **TypeScript** - Fully typed with comprehensive test coverage
 
 ## Installation
 
 ```bash
-npm install -g deps2changesets
+npm install -g @izumisy/deps2changesets
 ```
 
 Or use with npx:
 
 ```bash
-npx deps2changesets
-# or use the short alias
-npx deps2cs
+npx @izumisy/deps2changesets
 ```
+
+> **Note:** The short alias `deps2cs` is only available when globally installed. When using npx, use the full package name `@izumisy/deps2changesets`.
 
 ## Usage
 
@@ -32,16 +30,16 @@ Generate changesets for dependency changes between commits:
 
 ```bash
 # Compare main to HEAD (default, ideal for dependabot branches)
-deps2cs
+npx @izumisy/deps2changesets
 
 # Compare specific commits using Git range syntax
-deps2cs abc123..def456
+npx @izumisy/deps2changesets abc123..def456
 
 # Compare branches
-deps2cs main..feature-branch
+npx @izumisy/deps2changesets main..feature-branch
 
 # Compare from a specific ref to HEAD
-deps2cs main..
+npx @izumisy/deps2changesets main..
 ```
 
 ### Options
@@ -56,16 +54,16 @@ deps2cs main..
 
 ```bash
 # Generate patch changesets for changes from main (default)
-deps2cs
+npx @izumisy/deps2changesets
 
 # Generate changesets for a specific range
-deps2cs HEAD~3..HEAD
+npx @izumisy/deps2changesets HEAD~3..HEAD
 
 # Generate minor changesets
-deps2cs main..HEAD --releaseType minor
+npx @izumisy/deps2changesets main..HEAD --releaseType minor
 
 # Run in a specific directory
-deps2cs --cwd /path/to/repo
+npx @izumisy/deps2changesets --cwd /path/to/repo
 ```
 
 ## How it Works
