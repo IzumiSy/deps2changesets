@@ -1,11 +1,12 @@
 {
-  "name": "simple-dependabot-changeset",
+  "name": "deps2changesets",
   "version": "1.0.0",
   "description": "CLI tool to automatically generate changesets from dependency changes in Git commits",
   "type": "module",
   "main": "dist/cli.mjs",
   "bin": {
-    "simple-dependabot-changeset": "./dist/cli.mjs"
+    "deps2changesets": "./dist/cli.mjs",
+    "deps2cs": "./dist/cli.mjs"
   },
   "scripts": {
     "build": "tsdown",

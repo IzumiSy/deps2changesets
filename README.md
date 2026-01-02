@@ -1,4 +1,4 @@
-# simple-dependabot-changeset
+# deps2changesets
 
 CLI tool to automatically generate changesets from dependency changes in Git commits.
 
@@ -13,13 +13,15 @@ CLI tool to automatically generate changesets from dependency changes in Git com
 ## Installation
 
 ```bash
-npm install -g simple-dependabot-changeset
+npm install -g deps2changesets
 ```
 
 Or use with npx:
 
 ```bash
-npx simple-dependabot-changeset
+npx deps2changesets
+# or use the short alias
+npx deps2cs
 ```
 
 ## Usage
@@ -30,16 +32,16 @@ Generate changesets for dependency changes between commits:
 
 ```bash
 # Compare main to HEAD (default, ideal for dependabot branches)
-simple-dependabot-changeset
+deps2cs
 
 # Compare specific commits using Git range syntax
-simple-dependabot-changeset abc123..def456
+deps2cs abc123..def456
 
 # Compare branches
-simple-dependabot-changeset main..feature-branch
+deps2cs main..feature-branch
 
 # Compare from a specific ref to HEAD
-simple-dependabot-changeset main..
+deps2cs main..
 ```
 
 ### Options
@@ -54,16 +56,16 @@ simple-dependabot-changeset main..
 
 ```bash
 # Generate patch changesets for changes from main (default)
-simple-dependabot-changeset
+deps2cs
 
 # Generate changesets for a specific range
-simple-dependabot-changeset HEAD~3..HEAD
+deps2cs HEAD~3..HEAD
 
 # Generate minor changesets
-simple-dependabot-changeset main..HEAD --releaseType minor
+deps2cs main..HEAD --releaseType minor
 
 # Run in a specific directory
-simple-dependabot-changeset --cwd /path/to/repo
+deps2cs --cwd /path/to/repo
 ```
 
 ## How it Works
