@@ -107,41 +107,6 @@ Dependencies updated
 - Added axios (^1.4.0)
 ```
 
-## Use with Git Hooks
-
-You can use this tool with git hooks (e.g., using husky) to automatically generate changesets:
-
-```bash
-# In .husky/post-commit
-npx simple-dependabot-changeset HEAD~1..HEAD
-```
-
-## Development
-
-### Setup
-
-```bash
-pnpm install
-```
-
-### Build
-
-```bash
-pnpm build
-```
-
-### Test
-
-```bash
-pnpm test
-```
-
-### Type Check
-
-```bash
-pnpm typecheck
-```
-
 ## Usecase
 
 - [IzumiSy/kyrage](https://github.com/IzumiSy/kyrage/)
