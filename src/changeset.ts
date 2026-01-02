@@ -51,13 +51,18 @@ export async function createChangesets(
   releaseType: "patch" | "minor" | "major",
   cwd: string
 ): Promise<string[]> {
-  if (changedPackages.length === 0) {
+  // Filter out private packages as they don't need changesets
+  const publicPackages = changedPackages.filter(
+    (pkg) => !pkg.package.packageJson.private
+  );
+
+  if (publicPackages.length === 0) {
     return [];
   }
 
   const changesetIds: string[] = [];
 
-  for (const changedPackage of changedPackages) {
+  for (const changedPackage of publicPackages) {
     const summary = generateSummaryFromChanges(
       changedPackage.dependencyChanges
     );
