@@ -1,4 +1,4 @@
-import { Package } from '@manypkg/get-packages';
+import { Package } from "@manypkg/get-packages";
 
 /**
  * Represents the structure of a package.json file
@@ -15,7 +15,7 @@ export interface PackageJson {
 /**
  * Types of dependency changes that can occur
  */
-export type DependencyChangeType = 'added' | 'updated' | 'removed';
+export type DependencyChangeType = "added" | "updated" | "removed";
 
 /**
  * Represents a single dependency change in a package.json

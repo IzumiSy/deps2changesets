@@ -19,7 +19,7 @@ npm install -g simple-dependabot-changeset
 Or use with npx:
 
 ```bash
-npx simple-dependabot-changeset --from HEAD~1
+npx simple-dependabot-changeset
 ```
 
 ## Usage
@@ -29,22 +29,24 @@ npx simple-dependabot-changeset --from HEAD~1
 Generate changesets for dependency changes between commits:
 
 ```bash
-# Compare HEAD~1 to HEAD (default)
-simple-dependabot-changeset --from HEAD~1
+# Compare main to HEAD (default, ideal for dependabot branches)
+simple-dependabot-changeset
 
-# Compare specific commits
-simple-dependabot-changeset --from abc123 --to def456
+# Compare specific commits using Git range syntax
+simple-dependabot-changeset abc123..def456
 
 # Compare branches
-simple-dependabot-changeset --from main --to feature-branch
+simple-dependabot-changeset main..feature-branch
+
+# Compare from a specific ref to HEAD
+simple-dependabot-changeset main..
 ```
 
 ### Options
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--from` | Starting commit ref (required) | - |
-| `--to` | Ending commit ref | `HEAD` |
+| `[range]` | Git commit range (e.g., `main..HEAD`, `a1b2c3..d4e5f6`) | `main..HEAD` |
 | `--releaseType` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
 | `--prefix` | Commit message prefix to check for existing changesets | `[add changeset]` |
 | `--cwd` | Working directory | Current directory |
@@ -52,17 +54,20 @@ simple-dependabot-changeset --from main --to feature-branch
 ### Examples
 
 ```bash
-# Generate patch changesets for changes in the last commit
-simple-dependabot-changeset --from HEAD~1
+# Generate patch changesets for changes from main (default)
+simple-dependabot-changeset
+
+# Generate changesets for a specific range
+simple-dependabot-changeset HEAD~3..HEAD
 
 # Generate minor changesets
-simple-dependabot-changeset --from HEAD~1 --releaseType minor
+simple-dependabot-changeset main..HEAD --releaseType minor
 
 # Use custom prefix for detecting existing changesets
-simple-dependabot-changeset --from HEAD~1 --prefix "[changeset]"
+simple-dependabot-changeset --prefix "[changeset]"
 
 # Run in a specific directory
-simple-dependabot-changeset --from HEAD~1 --cwd /path/to/repo
+simple-dependabot-changeset --cwd /path/to/repo
 ```
 
 ## How it Works
@@ -108,7 +113,7 @@ You can use this tool with git hooks (e.g., using husky) to automatically genera
 
 ```bash
 # In .husky/post-commit
-npx simple-dependabot-changeset --from HEAD~1
+npx simple-dependabot-changeset HEAD~1..HEAD
 ```
 
 ## Development

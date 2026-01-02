@@ -3,6 +3,23 @@ import { defineCommand, runMain } from "citty";
 import { DependencyChangeAnalyzer } from "./dependency";
 import { createChangesets } from "./changeset";
 import { GitClientAdapter } from "./git";
+import { consoleLogger } from "./interfaces";
+
+/**
+ * Parse a Git range string (e.g., "a..b") into from/to refs.
+ * If no ".." is found, treats the input as the "from" ref with "HEAD" as "to".
+ */
+function parseGitRange(range: string): { from: string; to: string } {
+  if (range.includes("..")) {
+    const [from, to] = range.split("..");
+    return {
+      from: from || "HEAD",
+      to: to || "HEAD",
+    };
+  }
+  // If no ".." separator, treat the whole string as "from" with HEAD as "to"
+  return { from: range, to: "HEAD" };
+}
 
 const main = defineCommand({
   meta: {
@@ -11,15 +28,12 @@ const main = defineCommand({
     description: "Generate changesets from dependency changes in Git commits",
   },
   args: {
-    from: {
-      type: "string",
-      description: "Starting commit ref (e.g., HEAD~1, commit hash)",
-      required: true,
-    },
-    to: {
-      type: "string",
-      description: "Ending commit ref (e.g., HEAD, branch name)",
-      default: "HEAD",
+    range: {
+      type: "positional",
+      description:
+        "Git commit range (e.g., 'main..HEAD', 'a1b2c3..d4e5f6'). Defaults to 'main..HEAD' for dependabot branches.",
+      required: false,
+      default: "main..HEAD",
     },
     releaseType: {
       type: "string",
@@ -39,7 +53,8 @@ const main = defineCommand({
     },
   },
   async run({ args }) {
-    const { from, to, releaseType, prefix, cwd } = args;
+    const { range, releaseType, prefix, cwd } = args;
+    const { from, to } = parseGitRange(range);
 
     // Validate release type
     if (!["patch", "minor", "major"].includes(releaseType)) {
@@ -50,11 +65,12 @@ const main = defineCommand({
 
     console.log(`Analyzing changes from ${from} to ${to}...`);
 
-    // Initialize analyzer with Git adapter
+    // Initialize analyzer with Git adapter and console logger
     const analyzer = new DependencyChangeAnalyzer(
       new GitClientAdapter(cwd),
       from,
-      to
+      to,
+      consoleLogger
     );
 
     // Detect changed packages
@@ -88,7 +104,8 @@ const main = defineCommand({
     await createChangesets(
       changedPackages,
       releaseType as "patch" | "minor" | "major",
-      cwd
+      cwd,
+      consoleLogger
     );
 
     console.log("✓ Changesets created successfully!");
