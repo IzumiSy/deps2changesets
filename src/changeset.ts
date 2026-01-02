@@ -2,6 +2,13 @@ import writeChangeset from "@changesets/write";
 import type { ChangedPackage, DependencyChange } from "./types";
 
 /**
+ * Generate npm package URL
+ */
+function getNpmPackageUrl(packageName: string): string {
+  return `https://www.npmjs.com/package/${packageName}`;
+}
+
+/**
  * Generate a human-readable summary from dependency changes
  */
 function generateSummaryFromChanges(changes: DependencyChange[]): string {
@@ -17,15 +24,18 @@ function generateSummaryFromChanges(changes: DependencyChange[]): string {
   const lines: string[] = ["Dependencies updated\n"];
 
   updates.forEach((c) => {
-    lines.push(`- Updated ${c.name} (${c.oldVersion} -> ${c.newVersion})`);
+    const link = `[${c.name}](${getNpmPackageUrl(c.name)})`;
+    lines.push(`- Updated ${link} (${c.oldVersion} -> ${c.newVersion})`);
   });
 
   additions.forEach((c) => {
-    lines.push(`- Added ${c.name} (${c.newVersion})`);
+    const link = `[${c.name}](${getNpmPackageUrl(c.name)})`;
+    lines.push(`- Added ${link} (${c.newVersion})`);
   });
 
   removals.forEach((c) => {
-    lines.push(`- Removed ${c.name} (${c.oldVersion})`);
+    const link = `[${c.name}](${getNpmPackageUrl(c.name)})`;
+    lines.push(`- Removed ${link} (${c.oldVersion})`);
   });
 
   return lines.join("\n");
