@@ -32,12 +32,11 @@ export class WorkspacePackages {
    * Find a package by its package.json file path
    */
   findByFilePath(filePath: string): Package | undefined {
+    // Resolve to absolute path for reliable cross-platform comparison
+    const absoluteFilePath = path.resolve(this.cwd, filePath);
     return this.packages.find((p) => {
-      const packageJsonPath = path.relative(
-        this.cwd,
-        path.join(p.dir, "package.json")
-      );
-      return packageJsonPath === filePath || filePath.endsWith(packageJsonPath);
+      const packageJsonPath = path.join(p.dir, "package.json");
+      return absoluteFilePath === packageJsonPath;
     });
   }
 }
