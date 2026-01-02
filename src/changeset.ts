@@ -9,6 +9,21 @@ function getNpmPackageUrl(packageName: string): string {
 }
 
 /**
+ * Generate a single line summary for a single dependency change
+ */
+function generateSingleLineSummary(change: DependencyChange): string {
+  const link = `[${change.name}](${getNpmPackageUrl(change.name)})`;
+  switch (change.type) {
+    case "updated":
+      return `Updated ${link} (${change.oldVersion} -> ${change.newVersion})`;
+    case "added":
+      return `Added ${link} (${change.newVersion})`;
+    case "removed":
+      return `Removed ${link} (${change.oldVersion})`;
+  }
+}
+
+/**
  * Generate a human-readable summary from dependency changes
  */
 function generateSummaryFromChanges(changes: DependencyChange[]): string {
@@ -16,29 +31,16 @@ function generateSummaryFromChanges(changes: DependencyChange[]): string {
     return "Updated dependencies";
   }
 
-  const updates = changes.filter((c) => c.type === "updated");
-  const additions = changes.filter((c) => c.type === "added");
-  const removals = changes.filter((c) => c.type === "removed");
+  // Single change: return a single line without heading
+  if (changes.length === 1) {
+    return generateSingleLineSummary(changes[0]);
+  }
 
-  // Use markdown list format
-  const lines: string[] = ["Dependencies updated\n"];
-
-  updates.forEach((c) => {
-    const link = `[${c.name}](${getNpmPackageUrl(c.name)})`;
-    lines.push(`- Updated ${link} (${c.oldVersion} -> ${c.newVersion})`);
-  });
-
-  additions.forEach((c) => {
-    const link = `[${c.name}](${getNpmPackageUrl(c.name)})`;
-    lines.push(`- Added ${link} (${c.newVersion})`);
-  });
-
-  removals.forEach((c) => {
-    const link = `[${c.name}](${getNpmPackageUrl(c.name)})`;
-    lines.push(`- Removed ${link} (${c.oldVersion})`);
-  });
-
-  return lines.join("\n");
+  // Use markdown list format with heading for multiple changes
+  return [
+    "Dependencies updated\n",
+    ...changes.map((c) => `- ${generateSingleLineSummary(c)}`),
+  ].join("\n");
 }
 
 /**
