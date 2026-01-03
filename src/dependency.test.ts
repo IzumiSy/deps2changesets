@@ -71,7 +71,7 @@ describe("DependencyChangeAnalyzer", () => {
         "HEAD~1",
         "HEAD"
       );
-      const result = await analyzer.detectChangedPackages("/test");
+      const result = await analyzer.detectChangedPackages("/test", ["prod"]);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -127,7 +127,7 @@ describe("DependencyChangeAnalyzer", () => {
         "HEAD~1",
         "HEAD"
       );
-      const result = await analyzer.detectChangedPackages("/test");
+      const result = await analyzer.detectChangedPackages("/test", ["prod"]);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -165,7 +165,7 @@ describe("DependencyChangeAnalyzer", () => {
         "HEAD~1",
         "HEAD"
       );
-      const result = await analyzer.detectChangedPackages("/test");
+      const result = await analyzer.detectChangedPackages("/test", ["prod"]);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -217,7 +217,7 @@ describe("DependencyChangeAnalyzer", () => {
         "HEAD~1",
         "HEAD"
       );
-      const result = await analyzer.detectChangedPackages("/test");
+      const result = await analyzer.detectChangedPackages("/test", ["prod"]);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];

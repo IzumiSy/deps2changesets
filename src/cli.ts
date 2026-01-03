@@ -76,13 +76,7 @@ const command = define({
     },
   },
   async run(ctx) {
-    const {
-      range = "main..HEAD",
-      releaseType = "patch",
-      cwd = process.cwd(),
-      dryRun = false,
-      includeDeps = ["prod"],
-    } = ctx.values;
+    const { range, releaseType, cwd, dryRun, includeDeps } = ctx.values;
     const { from, to } = parseGitRange(range);
 
     // Check if .changeset directory exists
