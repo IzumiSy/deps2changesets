@@ -1,0 +1,40 @@
+name: 'deps2changesets'
+description: 'Generate changesets from dependency changes in Dependabot PRs'
+author: 'IzumiSy'
+branding:
+  icon: 'package'
+  color: 'blue'
+
+inputs:
+  release-type:
+    description: 'Release type for changesets (patch, minor, major)'
+    required: false
+    default: 'patch'
+  include-deps:
+    description: 'Additional dependency types to include (comma-separated: prod, dev, peer, optional)'
+    required: false
+    default: 'prod'
+  commit-message:
+    description: 'Commit message for the changeset'
+    required: false
+    default: 'chore: add changeset for dependency update'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Fetch base branch
+      shell: bash
+      run: git fetch origin ${{ github.base_ref }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+
+    - name: Generate changeset
+      shell: bash
+      run: npx @izumisy/deps2changesets --release-type ${{ inputs.release-type }} --include-deps=${{ inputs.include-deps }}
+
+    - name: Commit changeset
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: ${{ inputs.commit-message }}
+        file_pattern: '.changeset/*.md'

@@ -102,7 +102,7 @@ Dependencies updated
 
 ## GitHub Actions
 
-You can automate changeset generation for Dependabot PRs using GitHub Actions with [stefanzweifel/git-auto-commit-action](https://github.com/stefanzweifel/git-auto-commit-action).
+You can automate changeset generation for Dependabot PRs using the provided GitHub Action.
 
 ```yaml
 # .github/workflows/dependabot-changeset.yml
@@ -126,26 +126,28 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Fetch base branch
-        run: git fetch origin ${{ github.base_ref }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-
-      - name: Generate changeset
-        run: npx @izumisy/deps2changesets
-
-      - name: Commit changeset
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'chore: add changeset for dependency update'
-          file_pattern: '.changeset/*.md'
+      - name: Generate and commit changeset
+        uses: izumisy/deps2changesets@v1
 ```
 
-This workflow will:
-1. Trigger on Dependabot PRs
-2. Generate a changeset based on dependency changes
-3. Automatically commit the changeset file to the PR branch
+### Action Inputs
+
+| Input | Description | Default |
+|-------|-------------|---------|
+| `release-type` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
+| `include-deps` | Dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod` |
+| `commit-message` | Commit message for the changeset | `chore: add changeset for dependency update` |
+
+### Example with Options
+
+```yaml
+- name: Generate and commit changeset
+  uses: izumisy/deps2changesets@v1
+  with:
+    release-type: minor
+    include-deps: prod,dev
+    commit-message: 'chore: add changeset for deps update'
+```
 
 ## Usecase
 
