@@ -28,7 +28,7 @@
   "license": "MIT",
   "dependencies": {
     "@changesets/read": "^0.6.6",
-    "@changesets/write": "^0.3.2",
+    "@changesets/write": "^0.4.0",
     "@manypkg/get-packages": "^2.2.2",
     "consola": "^3.4.2",
     "gunshi": "^0.27.5",
