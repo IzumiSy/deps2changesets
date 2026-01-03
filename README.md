@@ -110,7 +110,7 @@ name: Dependabot Changeset
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
 
 permissions:
   contents: write
