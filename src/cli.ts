@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { cli, define } from "gunshi";
 import { consola } from "consola";
-import { DependencyChangeAnalyzer } from "./dependency";
+import { DependencyChangeAnalyzer, WorkspacePackages } from "./dependency";
 import { createChangesets } from "./changeset";
 import { GitClientAdapter } from "./git";
 import { renderChangedPackages, renderResult } from "./renderer";
@@ -64,14 +64,14 @@ const command = define({
     const analyzer = new DependencyChangeAnalyzer(
       new GitClientAdapter(cwd),
       from,
-      to
-    );
-
-    // Detect changed packages
-    const changedPackages = await analyzer.detectChangedPackages(
-      cwd,
+      to,
       includedDepTypes
     );
+
+    // Load workspace packages and detect changed packages
+    const workspacePackages = await WorkspacePackages.load(cwd);
+    const changedPackages =
+      await analyzer.detectChangedPackages(workspacePackages);
 
     const publicPackages = changedPackages.filter((pkg) => !pkg.private);
     const privateCount = changedPackages.filter((pkg) => pkg.private).length;

@@ -1,39 +1,39 @@
 import { describe, it, expect, vi, beforeEach, assert } from "vitest";
-import { DependencyChangeAnalyzer } from "./dependency";
+import { DependencyChangeAnalyzer, WorkspacePackages } from "./dependency";
 import { commandArgs } from "./types";
 import type { IGitClient } from "./interfaces";
+import type { Package } from "@manypkg/get-packages";
 
 // Default includeDeps value from CLI args
 const defaultIncludeDeps = [commandArgs.includeDeps.default];
 
-// Mock the dependencies
-vi.mock("@manypkg/get-packages");
+// Helper to create a mock package
+const createMockPackage = (
+  name: string,
+  dir: string,
+  isPrivate = false
+): Package =>
+  ({
+    dir,
+    relativeDir: ".",
+    packageJson: { name, version: "1.0.0", private: isPrivate },
+  }) as Package;
 
 describe("DependencyChangeAnalyzer", () => {
   let mockGitClient: IGitClient;
+  let workspacePackages: WorkspacePackages;
 
-  beforeEach(async () => {
-    // Reset all mocks
-    vi.clearAllMocks();
-
-    // Setup mocks
-    const { getPackages } = await import("@manypkg/get-packages");
-
-    vi.mocked(getPackages).mockResolvedValue({
-      packages: [],
-      rootPackage: {
-        dir: "/test",
-        relativeDir: ".",
-        packageJson: { name: "test-package", version: "1.0.0" },
-      },
-      tool: "pnpm" as const,
-      rootDir: "/test",
-    } as any);
-
+  beforeEach(() => {
     mockGitClient = {
       getChangedFiles: vi.fn(),
       getFileContent: vi.fn(),
     };
+
+    // Default workspace with a single package
+    workspacePackages = WorkspacePackages.fromPackages(
+      [createMockPackage("test-package", "/test")],
+      "/test"
+    );
   });
 
   describe("detectChangedPackages", () => {
@@ -65,12 +65,10 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
-      );
-      const result = await analyzer.detectChangedPackages(
-        "/test",
+        "HEAD",
         defaultIncludeDeps
       );
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -91,9 +89,10 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
+        "HEAD",
+        defaultIncludeDeps
       );
-      const result = await analyzer.detectChangedPackages("/test");
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       expect(result).toHaveLength(0);
     });
@@ -124,12 +123,10 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
-      );
-      const result = await analyzer.detectChangedPackages(
-        "/test",
+        "HEAD",
         defaultIncludeDeps
       );
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -165,12 +162,10 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
-      );
-      const result = await analyzer.detectChangedPackages(
-        "/test",
+        "HEAD",
         defaultIncludeDeps
       );
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -220,12 +215,10 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
-      );
-      const result = await analyzer.detectChangedPackages(
-        "/test",
+        "HEAD",
         defaultIncludeDeps
       );
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -269,12 +262,10 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
+        "HEAD",
+        ["prod", "dev"]
       );
-      const result = await analyzer.detectChangedPackages("/test", [
-        "prod",
-        "dev",
-      ]);
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -327,13 +318,10 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
+        "HEAD",
+        ["prod", "dev", "peer"]
       );
-      const result = await analyzer.detectChangedPackages("/test", [
-        "prod",
-        "dev",
-        "peer",
-      ]);
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       expect(result).toHaveLength(1);
       const pkg = result[0];
@@ -381,13 +369,11 @@ describe("DependencyChangeAnalyzer", () => {
       const analyzer = new DependencyChangeAnalyzer(
         mockGitClient,
         "HEAD~1",
-        "HEAD"
-      );
-      // Only prod deps included (default behavior)
-      const result = await analyzer.detectChangedPackages(
-        "/test",
+        "HEAD",
         defaultIncludeDeps
       );
+      // Only prod deps included (default behavior)
+      const result = await analyzer.detectChangedPackages(workspacePackages);
 
       // No production dependencies changed, so no packages should be detected
       expect(result).toHaveLength(0);
