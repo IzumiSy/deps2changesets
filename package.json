@@ -27,6 +27,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@changesets/read": "^0.6.6",
     "@changesets/write": "^0.3.2",
     "@manypkg/get-packages": "^2.2.2",
     "citty": "^0.1.6",
