@@ -33,22 +33,23 @@ Generate changesets for dependency changes between commits:
 npx @izumisy/deps2changesets
 
 # Compare specific commits using Git range syntax
-npx @izumisy/deps2changesets abc123..def456
+npx @izumisy/deps2changesets --range abc123..def456
 
 # Compare branches
-npx @izumisy/deps2changesets main..feature-branch
+npx @izumisy/deps2changesets --range main..feature-branch
 
 # Compare from a specific ref to HEAD
-npx @izumisy/deps2changesets main..
+npx @izumisy/deps2changesets --range main..
 ```
 
 ### Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `[range]` | Git commit range (e.g., `main..HEAD`, `a1b2c3..d4e5f6`) | `main..HEAD` |
-| `--releaseType` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
-| `--cwd` | Working directory | Current directory |
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+| `--range` | `-r` | Git commit range (e.g., `main..HEAD`, `a1b2c3..d4e5f6`) | `main..HEAD` |
+| `--release-type` | `-t` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
+| `--cwd` | `-c` | Working directory | Current directory |
+| `--dry-run` | `-d` | Preview changes without creating changesets | `false` |
 
 ### Examples
 
@@ -57,13 +58,16 @@ npx @izumisy/deps2changesets main..
 npx @izumisy/deps2changesets
 
 # Generate changesets for a specific range
-npx @izumisy/deps2changesets HEAD~3..HEAD
+npx @izumisy/deps2changesets --range HEAD~3..HEAD
 
 # Generate minor changesets
-npx @izumisy/deps2changesets main..HEAD --releaseType minor
+npx @izumisy/deps2changesets --range main..HEAD --release-type minor
 
 # Run in a specific directory
 npx @izumisy/deps2changesets --cwd /path/to/repo
+
+# Preview changes without creating changesets
+npx @izumisy/deps2changesets --dry-run
 ```
 
 ## How it Works
