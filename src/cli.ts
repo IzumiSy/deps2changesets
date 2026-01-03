@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
 import { defineCommand, runMain } from "citty";
 import { DependencyChangeAnalyzer } from "./dependency";
 import { createChangesets } from "./changeset";
@@ -19,6 +21,13 @@ function parseGitRange(range: string): { from: string; to: string } {
   }
   // If no ".." separator, treat the whole string as "from" with HEAD as "to"
   return { from: range, to: "HEAD" };
+}
+
+/**
+ * Check if .changeset directory exists
+ */
+function hasChangesetDirectory(cwd: string): boolean {
+  return fs.existsSync(path.join(cwd, ".changeset"));
 }
 
 const main = defineCommand({
@@ -55,6 +64,13 @@ const main = defineCommand({
   async run({ args }) {
     const { range, releaseType, cwd, dryRun } = args;
     const { from, to } = parseGitRange(range);
+
+    // Check if .changeset directory exists
+    if (!hasChangesetDirectory(cwd)) {
+      throw new Error(
+        "No .changeset directory found. Please initialize changesets first with `npx @changesets/cli init`."
+      );
+    }
 
     // Validate release type
     if (!["patch", "minor", "major"].includes(releaseType)) {
