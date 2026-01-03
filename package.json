@@ -28,21 +28,21 @@
   "license": "MIT",
   "dependencies": {
     "@changesets/read": "^0.6.6",
-    "@changesets/write": "^0.3.2",
-    "@manypkg/get-packages": "^2.2.2",
+    "@changesets/write": "^0.4.0",
+    "@manypkg/get-packages": "^3.1.0",
     "consola": "^3.4.2",
     "gunshi": "^0.27.5",
     "simple-git": "^3.30.0"
   },
   "devDependencies": {
-    "@types/node": "^20.17.9",
+    "@types/node": "^25.0.3",
     "memfs": "^4.51.1",
-    "prettier": "^3.4.2",
+    "prettier": "^3.7.4",
     "tsdown": "^0.18.4",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.27.0",
   "engines": {
     "node": "24.x"
   }
