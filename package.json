@@ -40,7 +40,7 @@
     "prettier": "^3.4.2",
     "tsdown": "^0.18.4",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^4.0.16"
   },
   "packageManager": "pnpm@10.18.3",
   "engines": {
