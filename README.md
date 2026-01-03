@@ -111,14 +111,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           ref: ${{ github.head_ref }}
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
 
       - name: Generate changeset
-        run: npx @izumisy/deps2changesets origin/${{ github.base_ref }}..${{ github.head_ref }}
+        run: npx @izumisy/deps2changesets
 
       - name: Commit changeset
         uses: stefanzweifel/git-auto-commit-action@v5
