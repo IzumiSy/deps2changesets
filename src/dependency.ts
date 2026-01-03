@@ -19,11 +19,6 @@ const DEP_TYPE_MAP = {
 } as const;
 
 /**
- * Dependency type keys in package.json (derived from DEP_TYPE_MAP)
- */
-type DependencyKey = (typeof DEP_TYPE_MAP)[DepType];
-
-/**
  * Collection object representing all packages in a workspace
  */
 export class WorkspacePackages {
