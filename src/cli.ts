@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-import { defineCommand, runMain } from "citty";
+import * as pkg from "../package.json";
+import fs from "node:fs";
+import path from "node:path";
+import { cli, define } from "gunshi";
+import { consola } from "consola";
 import { DependencyChangeAnalyzer } from "./dependency";
 import { createChangesets } from "./changeset";
 import { GitClientAdapter } from "./git";
@@ -21,40 +25,57 @@ function parseGitRange(range: string): { from: string; to: string } {
   return { from: range, to: "HEAD" };
 }
 
-const main = defineCommand({
-  meta: {
-    name: "simple-dependabot-changeset",
-    version: "1.0.0",
-    description: "Generate changesets from dependency changes in Git commits",
-  },
+/**
+ * Check if .changeset directory exists
+ */
+function hasChangesetDirectory(cwd: string): boolean {
+  return fs.existsSync(path.join(cwd, ".changeset"));
+}
+
+const command = define({
+  toKebab: true,
   args: {
     range: {
-      type: "positional",
+      type: "string",
+      short: "r",
       description:
         "Git commit range (e.g., 'main..HEAD', 'a1b2c3..d4e5f6'). Defaults to 'main..HEAD' for dependabot branches.",
-      required: false,
       default: "main..HEAD",
     },
     releaseType: {
       type: "string",
-      description: "Release type for changesets",
+      short: "t",
+      description: "Release type for changesets (patch|minor|major)",
       default: "patch",
-      valueHint: "patch|minor|major",
     },
     cwd: {
       type: "string",
+      short: "c",
       description: "Working directory",
       default: process.cwd(),
     },
     dryRun: {
       type: "boolean",
+      short: "d",
       description: "Preview changes without creating changesets",
       default: false,
     },
   },
-  async run({ args }) {
-    const { range, releaseType, cwd, dryRun } = args;
+  async run(ctx) {
+    const {
+      range = "main..HEAD",
+      releaseType = "patch",
+      cwd = process.cwd(),
+      dryRun = false,
+    } = ctx.values;
     const { from, to } = parseGitRange(range);
+
+    // Check if .changeset directory exists
+    if (!hasChangesetDirectory(cwd)) {
+      throw new Error(
+        "No .changeset directory found. Please initialize changesets first with `npx @changesets/cli init`."
+      );
+    }
 
     // Validate release type
     if (!["patch", "minor", "major"].includes(releaseType)) {
@@ -99,4 +120,12 @@ const main = defineCommand({
   },
 });
 
-runMain(main);
+await cli(process.argv.slice(2), command, {
+  name: "deps2changesets",
+  version: pkg.version,
+  description: "Generate changesets from dependency changes in Git commits",
+  onErrorCommand: (_ctx, error) => {
+    consola.error(error.message);
+    process.exit(1);
+  },
+});
