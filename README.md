@@ -87,6 +87,51 @@ Dependencies updated
 - Added [axios](https://www.npmjs.com/package/axios) (^1.4.0)
 ```
 
+## GitHub Actions
+
+You can automate changeset generation for Dependabot PRs using GitHub Actions with [stefanzweifel/git-auto-commit-action](https://github.com/stefanzweifel/git-auto-commit-action).
+
+```yaml
+# .github/workflows/dependabot-changeset.yml
+name: Dependabot Changeset
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-changeset:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+
+      - name: Generate changeset
+        run: npx @izumisy/deps2changesets origin/${{ github.base_ref }}..${{ github.head_ref }}
+
+      - name: Commit changeset
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: add changeset for dependency update'
+          file_pattern: '.changeset/*.md'
+```
+
+This workflow will:
+1. Trigger on Dependabot PRs
+2. Generate a changeset based on dependency changes
+3. Automatically commit the changeset file to the PR branch
+
 ## Usecase
 
 - [IzumiSy/kyrage](https://github.com/IzumiSy/kyrage/)
