@@ -31,19 +31,23 @@ export const commandArgs = {
     default: false,
   },
   includeDeps: {
-    type: "enum",
+    type: "string",
     short: "i",
-    description: "Dependency types to include in changesets.",
-    choices: ["prod", "dev", "peer", "optional"],
-    multiple: true,
+    description:
+      "Dependency types to include in changesets (comma-separated: prod,dev,peer,optional).",
     default: "prod",
   },
 } as const;
 
 /**
- * Dependency types that can be included (derived from commandArgs)
+ * Valid dependency type values
  */
-export type DepType = (typeof commandArgs.includeDeps.choices)[number];
+export const validDepTypes = ["prod", "dev", "peer", "optional"] as const;
+
+/**
+ * Dependency types that can be included (derived from validDepTypes)
+ */
+export type DepType = (typeof validDepTypes)[number];
 
 /**
  * Represents the structure of a package.json file

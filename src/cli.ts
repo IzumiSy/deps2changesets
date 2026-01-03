@@ -8,8 +8,19 @@ import { DependencyChangeAnalyzer } from "./dependency";
 import { createChangesets } from "./changeset";
 import { GitClientAdapter } from "./git";
 import { renderChangedPackages, renderResult } from "./renderer";
-import { commandArgs } from "./types";
+import { commandArgs, validDepTypes } from "./types";
 import type { DepType } from "./types";
+
+/**
+ * Parse the --include-deps option value into an array of dependency types
+ */
+function parseIncludeDeps(value: string): DepType[] {
+  if (!value) return ["prod"];
+  return value
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter((type): type is DepType => validDepTypes.includes(type as DepType));
+}
 
 /**
  * Parse a Git range string (e.g., "a..b") into from/to refs.
@@ -40,6 +51,7 @@ const command = define({
   async run(ctx) {
     const { range, releaseType, cwd, dryRun, includeDeps } = ctx.values;
     const { from, to } = parseGitRange(range);
+    const includedDepTypes = parseIncludeDeps(includeDeps);
 
     // Check if .changeset directory exists
     if (!hasChangesetDirectory(cwd)) {
@@ -58,7 +70,7 @@ const command = define({
     // Detect changed packages
     const changedPackages = await analyzer.detectChangedPackages(
       cwd,
-      includeDeps as DepType[]
+      includedDepTypes
     );
 
     const publicPackages = changedPackages.filter((pkg) => !pkg.private);
