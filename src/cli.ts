@@ -10,6 +10,11 @@ import { GitClientAdapter } from "./git";
 import { renderChangedPackages, renderResult } from "./renderer";
 
 /**
+ * Dependency types that can be included
+ */
+export type DepType = "prod" | "dev" | "peer" | "optional";
+
+/**
  * Parse a Git range string (e.g., "a..b") into from/to refs.
  * If no ".." is found, treats the input as the "from" ref with "HEAD" as "to".
  */
@@ -43,9 +48,10 @@ const command = define({
       default: "main..HEAD",
     },
     releaseType: {
-      type: "string",
+      type: "enum",
       short: "t",
-      description: "Release type for changesets (patch|minor|major)",
+      description: "Release type for changesets",
+      choices: ["patch", "minor", "major"],
       default: "patch",
     },
     cwd: {
@@ -60,6 +66,14 @@ const command = define({
       description: "Preview changes without creating changesets",
       default: false,
     },
+    includeDeps: {
+      type: "enum",
+      short: "i",
+      description: "Dependency types to include in changesets.",
+      choices: ["prod", "dev", "peer", "optional"],
+      multiple: true,
+      default: "prod",
+    },
   },
   async run(ctx) {
     const {
@@ -67,6 +81,7 @@ const command = define({
       releaseType = "patch",
       cwd = process.cwd(),
       dryRun = false,
+      includeDeps = ["prod"],
     } = ctx.values;
     const { from, to } = parseGitRange(range);
 
@@ -74,13 +89,6 @@ const command = define({
     if (!hasChangesetDirectory(cwd)) {
       throw new Error(
         "No .changeset directory found. Please initialize changesets first with `npx @changesets/cli init`."
-      );
-    }
-
-    // Validate release type
-    if (!["patch", "minor", "major"].includes(releaseType)) {
-      throw new Error(
-        `Invalid release type: ${releaseType}. Must be patch, minor, or major.`
       );
     }
 
@@ -92,7 +100,10 @@ const command = define({
     );
 
     // Detect changed packages
-    const changedPackages = await analyzer.detectChangedPackages(cwd);
+    const changedPackages = await analyzer.detectChangedPackages(
+      cwd,
+      includeDeps as DepType[]
+    );
 
     const publicPackages = changedPackages.filter((pkg) => !pkg.private);
     const privateCount = changedPackages.filter((pkg) => pkg.private).length;

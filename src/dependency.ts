@@ -2,6 +2,26 @@ import path from "path";
 import { getPackages, type Package } from "@manypkg/get-packages";
 import type { IGitClient } from "./interfaces";
 import type { ChangedPackage, PackageJson, DependencyChange } from "./types";
+import type { DepType } from "./cli";
+
+/**
+ * Dependency type keys in package.json
+ */
+type DependencyKey =
+  | "dependencies"
+  | "devDependencies"
+  | "peerDependencies"
+  | "optionalDependencies";
+
+/**
+ * Map short dep type names to package.json keys
+ */
+const DEP_TYPE_MAP: Record<DepType, DependencyKey> = {
+  prod: "dependencies",
+  dev: "devDependencies",
+  peer: "peerDependencies",
+  optional: "optionalDependencies",
+};
 
 /**
  * Collection object representing all packages in a workspace
@@ -53,8 +73,13 @@ export class DependencyChangeAnalyzer {
 
   /**
    * Detect packages that have changes in their package.json files from Git commit range
+   * @param cwd Working directory
+   * @param includedDepTypes Additional dependency types to include (dev, peer, optional)
    */
-  async detectChangedPackages(cwd: string): Promise<ChangedPackage[]> {
+  async detectChangedPackages(
+    cwd: string,
+    includedDepTypes: DepType[] = []
+  ): Promise<ChangedPackage[]> {
     const packageJsonFiles = await this.getChangedPackageJsonFiles();
     if (packageJsonFiles.length === 0) {
       return [];
@@ -81,7 +106,10 @@ export class DependencyChangeAnalyzer {
         continue;
       }
 
-      const dependencyChanges = await this.analyzeDependencyChanges(file.path);
+      const dependencyChanges = await this.analyzeDependencyChanges(
+        file.path,
+        includedDepTypes
+      );
       if (dependencyChanges.length === 0) {
         continue;
       }
@@ -100,7 +128,8 @@ export class DependencyChangeAnalyzer {
    * Analyze a single package.json file for dependency changes
    */
   private async analyzeDependencyChanges(
-    filePath: string
+    filePath: string,
+    includedDepTypes: DepType[] = []
   ): Promise<DependencyChange[]> {
     try {
       // Fetch base (before) and head (after) package.json content
@@ -113,7 +142,11 @@ export class DependencyChangeAnalyzer {
       const headPackageJson = JSON.parse(headContent) as PackageJson;
 
       // Compare package.json files to detect dependency changes
-      return this.comparePackageJsons(basePackageJson, headPackageJson);
+      return this.comparePackageJsons(
+        basePackageJson,
+        headPackageJson,
+        includedDepTypes
+      );
     } catch {
       return [];
     }
@@ -140,20 +173,23 @@ export class DependencyChangeAnalyzer {
 
   /**
    * Compare two package.json objects to extract dependency changes
+   * @param includedDepTypes Dependency types to include (prod, dev, peer, optional)
    */
   private comparePackageJsons(
     basePackageJson: PackageJson,
-    headPackageJson: PackageJson
+    headPackageJson: PackageJson,
+    includedDepTypes: DepType[] = ["prod"]
   ): DependencyChange[] {
     const changes: DependencyChange[] = [];
 
-    // Collect all dependency types
-    const depTypes = [
-      "dependencies",
-      "devDependencies",
-      "peerDependencies",
-      "optionalDependencies",
-    ] as const;
+    // Build list of dependency types to check based on includedDepTypes
+    const depTypes: DependencyKey[] = [];
+    for (const depType of includedDepTypes) {
+      const mappedType = DEP_TYPE_MAP[depType];
+      if (mappedType && !depTypes.includes(mappedType)) {
+        depTypes.push(mappedType);
+      }
+    }
 
     for (const depType of depTypes) {
       const baseDeps = basePackageJson[depType] || {};
