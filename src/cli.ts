@@ -4,10 +4,23 @@ import fs from "node:fs";
 import path from "node:path";
 import { cli, define } from "gunshi";
 import { consola } from "consola";
-import { DependencyChangeAnalyzer } from "./dependency";
+import { DependencyChangeAnalyzer, WorkspacePackages } from "./dependency";
 import { createChangesets } from "./changeset";
 import { GitClientAdapter } from "./git";
 import { renderChangedPackages, renderResult } from "./renderer";
+import { commandArgs, validDepTypes } from "./types";
+import type { DepType } from "./types";
+
+/**
+ * Parse the --include-deps option value into an array of dependency types
+ */
+function parseIncludeDeps(value: string): DepType[] {
+  if (!value) return ["prod"];
+  return value
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter((type): type is DepType => validDepTypes.includes(type as DepType));
+}
 
 /**
  * Parse a Git range string (e.g., "a..b") into from/to refs.
@@ -34,41 +47,11 @@ function hasChangesetDirectory(cwd: string): boolean {
 
 const command = define({
   toKebab: true,
-  args: {
-    range: {
-      type: "string",
-      short: "r",
-      description:
-        "Git commit range (e.g., 'main..HEAD', 'a1b2c3..d4e5f6'). Defaults to 'main..HEAD' for dependabot branches.",
-      default: "main..HEAD",
-    },
-    releaseType: {
-      type: "string",
-      short: "t",
-      description: "Release type for changesets (patch|minor|major)",
-      default: "patch",
-    },
-    cwd: {
-      type: "string",
-      short: "c",
-      description: "Working directory",
-      default: process.cwd(),
-    },
-    dryRun: {
-      type: "boolean",
-      short: "d",
-      description: "Preview changes without creating changesets",
-      default: false,
-    },
-  },
+  args: commandArgs,
   async run(ctx) {
-    const {
-      range = "main..HEAD",
-      releaseType = "patch",
-      cwd = process.cwd(),
-      dryRun = false,
-    } = ctx.values;
+    const { range, releaseType, cwd, dryRun, includeDeps } = ctx.values;
     const { from, to } = parseGitRange(range);
+    const includedDepTypes = parseIncludeDeps(includeDeps);
 
     // Check if .changeset directory exists
     if (!hasChangesetDirectory(cwd)) {
@@ -77,22 +60,18 @@ const command = define({
       );
     }
 
-    // Validate release type
-    if (!["patch", "minor", "major"].includes(releaseType)) {
-      throw new Error(
-        `Invalid release type: ${releaseType}. Must be patch, minor, or major.`
-      );
-    }
-
     // Initialize analyzer with Git adapter
     const analyzer = new DependencyChangeAnalyzer(
       new GitClientAdapter(cwd),
       from,
-      to
+      to,
+      includedDepTypes
     );
 
-    // Detect changed packages
-    const changedPackages = await analyzer.detectChangedPackages(cwd);
+    // Load workspace packages and detect changed packages
+    const workspacePackages = await WorkspacePackages.load(cwd);
+    const changedPackages =
+      await analyzer.detectChangedPackages(workspacePackages);
 
     const publicPackages = changedPackages.filter((pkg) => !pkg.private);
     const privateCount = changedPackages.filter((pkg) => pkg.private).length;

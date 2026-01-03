@@ -50,6 +50,9 @@ npx @izumisy/deps2changesets --range main..
 | `--release-type` | `-t` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
 | `--cwd` | `-c` | Working directory | Current directory |
 | `--dry-run` | `-d` | Preview changes without creating changesets | `false` |
+| `--include-deps` | `-i` | Additional dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod` |
+
+> **Note:** By default, only production `dependencies` are included in changesets. Use `--include-deps` to include changes from `devDependencies`, `peerDependencies`, or `optionalDependencies`.
 
 ### Examples
 
@@ -68,6 +71,12 @@ npx @izumisy/deps2changesets --cwd /path/to/repo
 
 # Preview changes without creating changesets
 npx @izumisy/deps2changesets --dry-run
+
+# Include devDependencies changes
+npx @izumisy/deps2changesets --include-deps=dev
+
+# Include both devDependencies and peerDependencies changes
+npx @izumisy/deps2changesets --include-deps=dev,peer
 ```
 
 ## How it Works
