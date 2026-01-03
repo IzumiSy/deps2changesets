@@ -67,16 +67,18 @@ const main = defineCommand({
 
     // Check if .changeset directory exists
     if (!hasChangesetDirectory(cwd)) {
-      throw new Error(
-        "No .changeset directory found. Please initialize changesets first with `npx @changesets/cli init`."
+      console.error(
+        "Error: No .changeset directory found. Please initialize changesets first with `npx @changesets/cli init`."
       );
+      process.exit(1);
     }
 
     // Validate release type
     if (!["patch", "minor", "major"].includes(releaseType)) {
-      throw new Error(
-        `Invalid release type: ${releaseType}. Must be patch, minor, or major.`
+      console.error(
+        `Error: Invalid release type: ${releaseType}. Must be patch, minor, or major.`
       );
+      process.exit(1);
     }
 
     // Initialize analyzer with Git adapter
