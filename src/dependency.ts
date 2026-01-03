@@ -9,23 +9,19 @@ import type {
 } from "./types";
 
 /**
- * Dependency type keys in package.json
- */
-type DependencyKey =
-  | "dependencies"
-  | "devDependencies"
-  | "peerDependencies"
-  | "optionalDependencies";
-
-/**
  * Map short dep type names to package.json keys
  */
-const DEP_TYPE_MAP: Record<DepType, DependencyKey> = {
+const DEP_TYPE_MAP = {
   prod: "dependencies",
   dev: "devDependencies",
   peer: "peerDependencies",
   optional: "optionalDependencies",
-};
+} as const;
+
+/**
+ * Dependency type keys in package.json (derived from DEP_TYPE_MAP)
+ */
+type DependencyKey = (typeof DEP_TYPE_MAP)[DepType];
 
 /**
  * Collection object representing all packages in a workspace
