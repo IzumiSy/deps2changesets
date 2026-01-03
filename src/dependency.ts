@@ -178,59 +178,33 @@ export class DependencyChangeAnalyzer {
   private comparePackageJsons(
     basePackageJson: PackageJson,
     headPackageJson: PackageJson,
-    includedDepTypes: DepType[] = ["prod"]
+    includedDepTypes: DepType[]
   ): DependencyChange[] {
-    const changes: DependencyChange[] = [];
+    // Get unique dependency keys to check
+    const depTypes = [...new Set(includedDepTypes.map((t) => DEP_TYPE_MAP[t]))];
 
-    // Build list of dependency types to check based on includedDepTypes
-    const depTypes: DependencyKey[] = [];
-    for (const depType of includedDepTypes) {
-      const mappedType = DEP_TYPE_MAP[depType];
-      if (mappedType && !depTypes.includes(mappedType)) {
-        depTypes.push(mappedType);
-      }
-    }
-
-    for (const depType of depTypes) {
+    return depTypes.flatMap((depType) => {
       const baseDeps = basePackageJson[depType] || {};
       const headDeps = headPackageJson[depType] || {};
-
-      // Get all unique dependency names
       const allDeps = new Set([
         ...Object.keys(baseDeps),
         ...Object.keys(headDeps),
       ]);
 
-      for (const name of allDeps) {
+      return [...allDeps].flatMap((name): DependencyChange[] => {
         const oldVersion = baseDeps[name];
         const newVersion = headDeps[name];
 
         if (oldVersion && newVersion && oldVersion !== newVersion) {
-          // Dependency was updated
-          changes.push({
-            name,
-            type: "updated",
-            oldVersion,
-            newVersion,
-          });
+          return [{ name, type: "updated", oldVersion, newVersion }];
         } else if (!oldVersion && newVersion) {
-          // Dependency was added
-          changes.push({
-            name,
-            type: "added",
-            newVersion,
-          });
+          return [{ name, type: "added", newVersion }];
         } else if (oldVersion && !newVersion) {
-          // Dependency was removed
-          changes.push({
-            name,
-            type: "removed",
-            oldVersion,
-          });
+          return [{ name, type: "removed", oldVersion }];
+        } else {
+          return [];
         }
-      }
-    }
-
-    return changes;
+      });
+    });
   }
 }
