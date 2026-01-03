@@ -8,11 +8,8 @@ import { DependencyChangeAnalyzer } from "./dependency";
 import { createChangesets } from "./changeset";
 import { GitClientAdapter } from "./git";
 import { renderChangedPackages, renderResult } from "./renderer";
-
-/**
- * Dependency types that can be included
- */
-export type DepType = "prod" | "dev" | "peer" | "optional";
+import { commandArgs } from "./types";
+import type { DepType } from "./types";
 
 /**
  * Parse a Git range string (e.g., "a..b") into from/to refs.
@@ -39,42 +36,7 @@ function hasChangesetDirectory(cwd: string): boolean {
 
 const command = define({
   toKebab: true,
-  args: {
-    range: {
-      type: "string",
-      short: "r",
-      description:
-        "Git commit range (e.g., 'main..HEAD', 'a1b2c3..d4e5f6'). Defaults to 'main..HEAD' for dependabot branches.",
-      default: "main..HEAD",
-    },
-    releaseType: {
-      type: "enum",
-      short: "t",
-      description: "Release type for changesets",
-      choices: ["patch", "minor", "major"],
-      default: "patch",
-    },
-    cwd: {
-      type: "string",
-      short: "c",
-      description: "Working directory",
-      default: process.cwd(),
-    },
-    dryRun: {
-      type: "boolean",
-      short: "d",
-      description: "Preview changes without creating changesets",
-      default: false,
-    },
-    includeDeps: {
-      type: "enum",
-      short: "i",
-      description: "Dependency types to include in changesets.",
-      choices: ["prod", "dev", "peer", "optional"],
-      multiple: true,
-      default: "prod",
-    },
-  },
+  args: commandArgs,
   async run(ctx) {
     const { range, releaseType, cwd, dryRun, includeDeps } = ctx.values;
     const { from, to } = parseGitRange(range);

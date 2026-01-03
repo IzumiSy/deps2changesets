@@ -1,8 +1,12 @@
 import path from "path";
 import { getPackages, type Package } from "@manypkg/get-packages";
 import type { IGitClient } from "./interfaces";
-import type { ChangedPackage, PackageJson, DependencyChange } from "./types";
-import type { DepType } from "./cli";
+import type {
+  ChangedPackage,
+  PackageJson,
+  DependencyChange,
+  DepType,
+} from "./types";
 
 /**
  * Dependency type keys in package.json
