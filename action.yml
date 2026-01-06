@@ -6,6 +6,10 @@ branding:
   color: 'blue'
 
 inputs:
+  range:
+    description: "Git commit range"
+    required: false
+    default: 'origin/main..HEAD'
   release-type:
     description: 'Release type for changesets (patch, minor, major)'
     required: false
@@ -33,7 +37,7 @@ runs:
 
     - name: Generate changeset
       shell: bash
-      run: npx @izumisy/deps2changesets --release-type ${{ inputs.release-type }} --include-deps=${{ inputs.include-deps }}
+      run: npx @izumisy/deps2changesets --range ${{ inputs.range }} --release-type ${{ inputs.release-type }} --include-deps=${{ inputs.include-deps }}
 
     - name: Commit changeset
       uses: stefanzweifel/git-auto-commit-action@v5
