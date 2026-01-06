@@ -130,6 +130,8 @@ jobs:
         uses: izumisy/deps2changesets@v1
 ```
 
+Remember to set `versioning-strategy: increase` to reflect version updates on package.json file.
+
 ### Action Inputs
 
 | Input | Description | Default |
