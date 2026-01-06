@@ -55,7 +55,7 @@ function generateSummaryFromChanges(changes: DependencyChange[]): string {
     ].join("\n");
   }
 
-  return `${AUTO_GENERATED_BANNER}\n\n${content}`;
+  return `${content}\n\n${AUTO_GENERATED_BANNER}`;
 }
 
 /**
