@@ -28,6 +28,8 @@ runs:
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
+      with:
+        node-version-file: "package.json"
 
     - name: Generate changeset
       shell: bash
