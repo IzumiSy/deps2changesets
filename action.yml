@@ -40,7 +40,7 @@ runs:
       run: npx @izumisy/deps2changesets --range ${{ inputs.range }} --release-type ${{ inputs.release-type }} --include-deps=${{ inputs.include-deps }}
 
     - name: Commit changeset
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
       with:
         commit_message: ${{ inputs.commit-message }}
         file_pattern: '.changeset/*.md'
