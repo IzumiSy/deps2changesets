@@ -34,7 +34,7 @@
     "simple-git": "^3.30.0"
   },
   "devDependencies": {
-    "@types/node": "^25.0.9",
+    "@types/node": "^25.0.10",
     "memfs": "^4.51.1",
     "prettier": "^3.7.4",
     "tsdown": "^0.18.4",
