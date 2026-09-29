@@ -13,13 +13,13 @@ export class GitClientAdapter implements IGitClient {
 
   async getChangedFiles(
     fromRef: string,
-    toRef: string
+    toRef: string,
   ): Promise<Array<{ path: string; status: string }>> {
     const diff = await this.git.diffSummary([fromRef, toRef]);
     return diff.files.map((file) => ({
       path: file.file,
       status: this.mapGitStatusToStatus(
-        "insertions" in file ? file : { insertions: 0, deletions: 0 }
+        "insertions" in file ? file : { insertions: 0, deletions: 0 },
       ),
     }));
   }
@@ -32,10 +32,7 @@ export class GitClientAdapter implements IGitClient {
     }
   }
 
-  private mapGitStatusToStatus(file: {
-    insertions?: number;
-    deletions?: number;
-  }): string {
+  private mapGitStatusToStatus(file: { insertions?: number; deletions?: number }): string {
     const insertions = file.insertions ?? 0;
     const deletions = file.deletions ?? 0;
 

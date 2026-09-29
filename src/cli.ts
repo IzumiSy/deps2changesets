@@ -56,7 +56,7 @@ const command = define({
     // Check if .changeset directory exists
     if (!hasChangesetDirectory(cwd)) {
       throw new Error(
-        "No .changeset directory found. Please initialize changesets first with `npx @changesets/cli init`."
+        "No .changeset directory found. Please initialize changesets first with `npx @changesets/cli init`.",
       );
     }
 
@@ -65,22 +65,19 @@ const command = define({
       new GitClientAdapter(cwd),
       from,
       to,
-      includedDepTypes
+      includedDepTypes,
     );
 
     // Load workspace packages and detect changed packages
     const workspacePackages = await WorkspacePackages.load(cwd);
-    const changedPackages =
-      await analyzer.detectChangedPackages(workspacePackages);
+    const changedPackages = await analyzer.detectChangedPackages(workspacePackages);
 
     const publicPackages = changedPackages.filter((pkg) => !pkg.private);
     const privateCount = changedPackages.filter((pkg) => pkg.private).length;
 
     // Log skipped private packages (once, regardless of outcome)
     if (privateCount > 0) {
-      console.log(
-        `ℹ Skipped ${privateCount} private package(s) (changesets not needed)`
-      );
+      console.log(`ℹ Skipped ${privateCount} private package(s) (changesets not needed)`);
     }
 
     // Render the changes
@@ -88,11 +85,7 @@ const command = define({
 
     // Create changesets (unless dry-run)
     if (!dryRun) {
-      await createChangesets(
-        publicPackages,
-        releaseType as "patch" | "minor" | "major",
-        cwd
-      );
+      await createChangesets(publicPackages, releaseType as "patch" | "minor" | "major", cwd);
     }
 
     renderResult(publicPackages.length, dryRun);

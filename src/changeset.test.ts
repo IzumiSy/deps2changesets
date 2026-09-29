@@ -36,11 +36,7 @@ describe("createChangesets", () => {
       },
     ];
 
-    const result = await createChangesets(
-      changedPackages,
-      defaultReleaseType,
-      "/test"
-    );
+    const result = await createChangesets(changedPackages, defaultReleaseType, "/test");
 
     const { default: writeChangeset } = await import("@changesets/write");
     expect(writeChangeset).toHaveBeenCalledTimes(1);
@@ -48,7 +44,7 @@ describe("createChangesets", () => {
       expect.objectContaining({
         releases: [{ name: "test-package", type: defaultReleaseType }],
       }),
-      "/test"
+      "/test",
     );
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe("changeset-id");

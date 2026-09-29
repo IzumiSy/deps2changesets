@@ -44,13 +44,13 @@ npx @izumisy/deps2changesets --range main..
 
 ### Options
 
-| Option | Short | Description | Default |
-|--------|-------|-------------|---------|
-| `--range` | `-r` | Git commit range (e.g., `main..HEAD`, `a1b2c3..d4e5f6`) | `main..HEAD` |
-| `--release-type` | `-t` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
-| `--cwd` | `-c` | Working directory | Current directory |
-| `--dry-run` | `-d` | Preview changes without creating changesets | `false` |
-| `--include-deps` | `-i` | Additional dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod` |
+| Option           | Short | Description                                                                                 | Default           |
+| ---------------- | ----- | ------------------------------------------------------------------------------------------- | ----------------- |
+| `--range`        | `-r`  | Git commit range (e.g., `main..HEAD`, `a1b2c3..d4e5f6`)                                     | `main..HEAD`      |
+| `--release-type` | `-t`  | Release type for changesets (`patch`, `minor`, `major`)                                     | `patch`           |
+| `--cwd`          | `-c`  | Working directory                                                                           | Current directory |
+| `--dry-run`      | `-d`  | Preview changes without creating changesets                                                 | `false`           |
+| `--include-deps` | `-i`  | Additional dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod`            |
 
 > **Note:** By default, only production `dependencies` are included in changesets. Use `--include-deps` to include changes from `devDependencies`, `peerDependencies`, or `optionalDependencies`.
 
@@ -134,11 +134,11 @@ Remember to set `versioning-strategy: increase` to reflect version updates on pa
 
 ### Action Inputs
 
-| Input | Description | Default |
-|-------|-------------|---------|
-| `release-type` | Release type for changesets (`patch`, `minor`, `major`) | `patch` |
-| `include-deps` | Dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod` |
-| `commit-message` | Commit message for the changeset | `chore: add changeset for dependency update` |
+| Input            | Description                                                                      | Default                                      |
+| ---------------- | -------------------------------------------------------------------------------- | -------------------------------------------- |
+| `release-type`   | Release type for changesets (`patch`, `minor`, `major`)                          | `patch`                                      |
+| `include-deps`   | Dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod`                                       |
+| `commit-message` | Commit message for the changeset                                                 | `chore: add changeset for dependency update` |
 
 ### Example with Options
 
@@ -148,7 +148,7 @@ Remember to set `versioning-strategy: increase` to reflect version updates on pa
   with:
     release-type: minor
     include-deps: prod,dev
-    commit-message: 'chore: add changeset for deps update'
+    commit-message: "chore: add changeset for deps update"
 ```
 
 ## Usecase

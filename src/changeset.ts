@@ -58,7 +58,7 @@ export interface ChangesetResult {
 export async function createChangesets(
   changedPackages: PublicChangedPackage[],
   releaseType: "patch" | "minor" | "major",
-  cwd: string
+  cwd: string,
 ): Promise<ChangesetResult[]> {
   if (changedPackages.length === 0) {
     return [];
@@ -69,9 +69,7 @@ export async function createChangesets(
   for (const changedPackage of changedPackages) {
     const packageName = changedPackage.package.packageJson.name;
 
-    const summary = generateSummaryFromChanges(
-      changedPackage.dependencyChanges
-    );
+    const summary = generateSummaryFromChanges(changedPackage.dependencyChanges);
 
     const changesetId = await writeChangeset(
       {
@@ -83,7 +81,7 @@ export async function createChangesets(
           },
         ],
       },
-      cwd
+      cwd,
     );
 
     results.push({
