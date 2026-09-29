@@ -12,6 +12,7 @@
   ],
   "license": "MIT",
   "author": "",
+  "repository": "https://github.com/IzumiSy/deps2changesets.git",
   "bin": {
     "deps2changesets": "./dist/cli.mjs",
     "deps2cs": "./dist/cli.mjs"

@@ -1,0 +1,34 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    paths: [package.json]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+      - id: version
+        run: |
+          package_name=$(node -p "require('./package.json').name")
+          local_version=$(node -p "require('./package.json').version")
+          published_version=$(pnpm view "$package_name" version 2>/dev/null || true)
+          echo "publish=$([ "$local_version" != "$published_version" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - run: pnpm build
+        if: steps.version.outputs.publish == 'true'
+      - run: pnpm publish --access public
+        if: steps.version.outputs.publish == 'true'
