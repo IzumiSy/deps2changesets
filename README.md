@@ -1,5 +1,10 @@
 # deps2changesets
 
+[![npm version](https://img.shields.io/npm/v/@izumisy/deps2changesets?logo=npm)](https://www.npmjs.com/package/@izumisy/deps2changesets)
+[![npm downloads](https://img.shields.io/npm/dw/@izumisy/deps2changesets?logo=npm)](https://www.npmjs.com/package/@izumisy/deps2changesets)
+[![license](https://img.shields.io/github/license/IzumiSy/deps2changesets)](LICENSE)
+[![Node.js](https://img.shields.io/node/v/@izumisy/deps2changesets)](https://nodejs.org/)
+
 CLI tool to automatically generate changesets from dependency changes in Git commits.
 
 ## Features
