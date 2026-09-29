@@ -144,6 +144,7 @@ Remember to set `versioning-strategy: increase` to reflect version updates on pa
 | `release-type`   | Release type for changesets (`patch`, `minor`, `major`)                          | `patch`                                      |
 | `include-deps`   | Dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod`                                       |
 | `commit-message` | Commit message for the changeset                                                 | `chore: add changeset for dependency update` |
+| `skip_commit`    | Skip committing the generated changesets                                         | `false`                                      |
 
 ### Example with Options
 
@@ -154,6 +155,7 @@ Remember to set `versioning-strategy: increase` to reflect version updates on pa
     release-type: minor
     include-deps: prod,dev
     commit-message: "chore: add changeset for deps update"
+    skip_commit: true # generate the changeset without committing it
 ```
 
 ## Usecase
