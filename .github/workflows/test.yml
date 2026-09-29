@@ -17,8 +17,10 @@ jobs:
         with:
           cache: pnpm
           cache-dependency-path: ./pnpm-lock.yaml
-          node-version-file: './package.json'
+          node-version-file: "./package.json"
       - run: pnpm install
+      - run: pnpm format:check
+      - run: pnpm lint
       - run: pnpm type-check
       - run: pnpm test
       - run: pnpm build

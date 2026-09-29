@@ -18,6 +18,24 @@ pnpm build
 pnpm test
 ```
 
+## Lint
+
+```bash
+pnpm lint
+```
+
+## Format
+
+```bash
+pnpm format
+```
+
+To check formatting without writing files:
+
+```bash
+pnpm format:check
+```
+
 ## Type Check
 
 ```bash

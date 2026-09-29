@@ -1,12 +1,7 @@
 import path from "path";
 import { getPackages, type Package } from "@manypkg/get-packages";
 import type { IGitClient } from "./interfaces";
-import type {
-  ChangedPackage,
-  PackageJson,
-  DependencyChange,
-  DepType,
-} from "./types";
+import type { ChangedPackage, PackageJson, DependencyChange, DepType } from "./types";
 
 /**
  * Map short dep type names to package.json keys
@@ -24,7 +19,7 @@ const DEP_TYPE_MAP = {
 export class WorkspacePackages {
   private constructor(
     private readonly packages: Package[],
-    private readonly cwd: string
+    private readonly cwd: string,
   ) {}
 
   /**
@@ -71,16 +66,14 @@ export class DependencyChangeAnalyzer {
     private readonly client: IGitClient,
     private readonly fromRef: string,
     private readonly toRef: string,
-    private readonly includedDepTypes: DepType[]
+    private readonly includedDepTypes: DepType[],
   ) {}
 
   /**
    * Detect packages that have changes in their package.json files from Git commit range
    * @param workspacePackages Workspace packages to check
    */
-  async detectChangedPackages(
-    workspacePackages: WorkspacePackages
-  ): Promise<ChangedPackage[]> {
+  async detectChangedPackages(workspacePackages: WorkspacePackages): Promise<ChangedPackage[]> {
     const packageJsonFiles = await this.getChangedPackageJsonFiles();
     if (packageJsonFiles.length === 0) {
       return [];
@@ -122,9 +115,7 @@ export class DependencyChangeAnalyzer {
   /**
    * Analyze a single package.json file for dependency changes
    */
-  private async analyzeDependencyChanges(
-    filePath: string
-  ): Promise<DependencyChange[]> {
+  private async analyzeDependencyChanges(filePath: string): Promise<DependencyChange[]> {
     try {
       // Fetch base (before) and head (after) package.json content
       const [baseContent, headContent] = await Promise.all([
@@ -145,9 +136,7 @@ export class DependencyChangeAnalyzer {
   /**
    * Get all changed package.json files from Git commit range
    */
-  private async getChangedPackageJsonFiles(): Promise<
-    Array<{ path: string; status: string }>
-  > {
+  private async getChangedPackageJsonFiles(): Promise<Array<{ path: string; status: string }>> {
     // Get all changed files in the commit range
     const files = await this.client.getChangedFiles(this.fromRef, this.toRef);
 
@@ -155,7 +144,7 @@ export class DependencyChangeAnalyzer {
     const packageJsonFiles = files.filter(
       (file) =>
         file.path.endsWith("package.json") &&
-        (file.status === "modified" || file.status === "added")
+        (file.status === "modified" || file.status === "added"),
     );
 
     return packageJsonFiles;
@@ -166,20 +155,15 @@ export class DependencyChangeAnalyzer {
    */
   private comparePackageJsons(
     basePackageJson: PackageJson,
-    headPackageJson: PackageJson
+    headPackageJson: PackageJson,
   ): DependencyChange[] {
     // Get unique dependency keys to check
-    const depTypes = [
-      ...new Set(this.includedDepTypes.map((t) => DEP_TYPE_MAP[t])),
-    ];
+    const depTypes = [...new Set(this.includedDepTypes.map((t) => DEP_TYPE_MAP[t]))];
 
     return depTypes.flatMap((depType) => {
       const baseDeps = basePackageJson[depType] || {};
       const headDeps = headPackageJson[depType] || {};
-      const allDeps = new Set([
-        ...Object.keys(baseDeps),
-        ...Object.keys(headDeps),
-      ]);
+      const allDeps = new Set([...Object.keys(baseDeps), ...Object.keys(headDeps)]);
 
       return [...allDeps].flatMap((name): DependencyChange[] => {
         const oldVersion = baseDeps[name];

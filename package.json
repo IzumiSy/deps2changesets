@@ -1,10 +1,17 @@
 {
   "name": "@izumisy/deps2changesets",
-  "private": false,
   "version": "0.2.2",
+  "private": false,
   "description": "CLI tool to automatically generate changesets from dependency changes in Git commits",
-  "type": "module",
-  "main": "dist/cli.mjs",
+  "keywords": [
+    "changesets",
+    "cli",
+    "dependabot",
+    "dependencies",
+    "monorepo"
+  ],
+  "license": "MIT",
+  "author": "",
   "bin": {
     "deps2changesets": "./dist/cli.mjs",
     "deps2cs": "./dist/cli.mjs"
@@ -12,20 +19,16 @@
   "files": [
     "dist"
   ],
+  "type": "module",
+  "main": "dist/cli.mjs",
   "scripts": {
     "build": "tsdown",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": [
-    "changesets",
-    "dependabot",
-    "dependencies",
-    "monorepo",
-    "cli"
-  ],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "@changesets/write": "^0.4.0",
     "@manypkg/get-packages": "^3.1.0",
@@ -36,13 +39,14 @@
   "devDependencies": {
     "@types/node": "^25.0.10",
     "memfs": "^4.56.9",
-    "prettier": "^3.7.4",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
     "tsdown": "^0.20.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
-  "packageManager": "pnpm@12.6.0",
   "engines": {
     "node": "24.x"
-  }
+  },
+  "packageManager": "pnpm@12.6.0"
 }

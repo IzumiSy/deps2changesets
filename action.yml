@@ -1,30 +1,30 @@
-name: 'deps2changesets'
-description: 'Generate changesets from dependency changes in Dependabot PRs'
-author: 'IzumiSy'
+name: "deps2changesets"
+description: "Generate changesets from dependency changes in Dependabot PRs"
+author: "IzumiSy"
 branding:
-  icon: 'package'
-  color: 'blue'
+  icon: "package"
+  color: "blue"
 
 inputs:
   range:
     description: "Git commit range"
     required: false
-    default: 'origin/main..HEAD'
+    default: "origin/main..HEAD"
   release-type:
-    description: 'Release type for changesets (patch, minor, major)'
+    description: "Release type for changesets (patch, minor, major)"
     required: false
-    default: 'patch'
+    default: "patch"
   include-deps:
-    description: 'Additional dependency types to include (comma-separated: prod, dev, peer, optional)'
+    description: "Additional dependency types to include (comma-separated: prod, dev, peer, optional)"
     required: false
-    default: 'prod'
+    default: "prod"
   commit-message:
-    description: 'Commit message for the changeset'
+    description: "Commit message for the changeset"
     required: false
-    default: 'chore: add changeset for dependency update'
+    default: "chore: add changeset for dependency update"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Fetch base branch
       shell: bash
@@ -43,4 +43,4 @@ runs:
       uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
       with:
         commit_message: ${{ inputs.commit-message }}
-        file_pattern: '.changeset/*.md'
+        file_pattern: ".changeset/*.md"

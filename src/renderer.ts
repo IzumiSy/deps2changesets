@@ -30,9 +30,7 @@ function formatDependencyChange(change: DependencyChange): string {
 /**
  * Render all changed packages with their dependency changes
  */
-export function renderChangedPackages(
-  changedPackages: PublicChangedPackage[]
-): void {
+export function renderChangedPackages(changedPackages: PublicChangedPackage[]): void {
   if (changedPackages.length === 0) {
     return;
   }
@@ -58,8 +56,6 @@ export function renderResult(count: number, dryRun: boolean): void {
   if (dryRun) {
     console.log(`ℹ Would create ${count} changeset(s) (dry-run)`);
   } else {
-    console.log(
-      `${colors.green}✓${colors.reset} Created ${count} changeset(s)`
-    );
+    console.log(`${colors.green}✓${colors.reset} Created ${count} changeset(s)`);
   }
 }
