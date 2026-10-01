@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import writeChangeset from "@changesets/write";
 import { mkdtemp, mkdir, readdir, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -46,6 +47,21 @@ describe("createChangesets", () => {
     expect(files).toEqual([`${result[0].id}.md`]);
     await expect(readFile(path.join(cwd, ".changeset", files[0]), "utf8")).resolves.toContain(
       "Updated [lodash](https://www.npmjs.com/package/lodash) (^4.17.19 -> ^4.17.21)",
+    );
+  });
+
+  it("matches @changesets/write output", async () => {
+    const [actual] = await createChangesets(changedPackages, defaultReleaseType, cwd);
+    const expected = await writeChangeset(
+      {
+        summary: "Updated [lodash](https://www.npmjs.com/package/lodash) (^4.17.19 -> ^4.17.21)",
+        releases: [{ name: "test-package", type: defaultReleaseType }],
+      },
+      cwd,
+    );
+
+    await expect(readFile(path.join(cwd, ".changeset", `${actual.id}.md`), "utf8")).resolves.toBe(
+      await readFile(path.join(cwd, ".changeset", `${expected}.md`), "utf8"),
     );
   });
 
