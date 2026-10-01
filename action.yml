@@ -1,5 +1,5 @@
 name: "deps2changesets"
-description: "Generate changesets from dependency changes in Dependabot PRs"
+description: "Generate changesets from dependency changes in dependency update PRs"
 author: "IzumiSy"
 branding:
   icon: "package"

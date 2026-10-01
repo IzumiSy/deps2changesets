@@ -1,4 +1,6 @@
-import writeChangeset from "@changesets/write";
+import { createHash } from "node:crypto";
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
 import type { PublicChangedPackage, DependencyChange } from "./types";
 
 /**
@@ -60,33 +62,28 @@ export async function createChangesets(
   releaseType: "patch" | "minor" | "major",
   cwd: string,
 ): Promise<ChangesetResult[]> {
-  if (changedPackages.length === 0) {
-    return [];
-  }
-
   const results: ChangesetResult[] = [];
 
   for (const changedPackage of changedPackages) {
     const packageName = changedPackage.package.packageJson.name;
-
     const summary = generateSummaryFromChanges(changedPackage.dependencyChanges);
+    const hash = createHash("sha256")
+      .update(`${packageName}\0${releaseType}\0${summary}`)
+      .digest("hex");
+    const changesetId = `deps2changesets-${hash.slice(0, 8)}`;
+    const changesetPath = path.join(cwd, ".changeset", `${changesetId}.md`);
+    const contents = `---\n${JSON.stringify(packageName)}: ${releaseType}\n---\n\n${summary}\n`;
 
-    const changesetId = await writeChangeset(
-      {
-        summary,
-        releases: [
-          {
-            name: packageName,
-            type: releaseType,
-          },
-        ],
-      },
-      cwd,
-    );
+    try {
+      await writeFile(changesetPath, contents, { flag: "wx" });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      if ((await readFile(changesetPath, "utf8")) !== contents) {
+        throw new Error(`Changeset filename collision: ${changesetId}`);
+      }
+    }
 
-    results.push({
-      id: changesetId,
-    });
+    results.push({ id: changesetId });
   }
 
   return results;
