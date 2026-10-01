@@ -107,7 +107,7 @@ Dependencies updated
 
 ## GitHub Actions
 
-You can automate changeset generation for Dependabot PRs using the provided GitHub Action.
+You can automate changeset generation for Dependabot or Renovate PRs using the provided GitHub Action. Re-running the same dependency update is idempotent: it reuses the existing changeset instead of adding another one.
 
 ```yaml
 # .github/workflows/dependabot-changeset.yml
@@ -124,7 +124,7 @@ permissions:
 jobs:
   generate-changeset:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
