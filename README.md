@@ -105,6 +105,12 @@ Dependencies updated
 - Added [axios](https://www.npmjs.com/package/axios) (^1.4.0)
 ```
 
+### Generated changeset filenames
+
+Changesets are written as `.changeset/deps2changesets-<hash>.md`, for example `.changeset/deps2changesets-1234abcd.md`.
+
+`<hash>` is the first eight hexadecimal characters of the SHA-256 hash of the package name, release type, and generated summary. The same dependency update therefore always has the same filename and is not duplicated when CI is re-run. If that filename already exists with different content, the command fails rather than overwriting it.
+
 ## GitHub Actions
 
 You can automate changeset generation for Dependabot or Renovate PRs using the provided GitHub Action. Re-running the same dependency update is idempotent: it reuses the existing changeset instead of adding another one.
