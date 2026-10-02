@@ -37,6 +37,13 @@ export const commandArgs = {
       "Dependency types to include in changesets (comma-separated: prod,dev,peer,optional).",
     default: "prod",
   },
+  scope: {
+    type: "string",
+    short: "s",
+    description:
+      "Group generated changesets under this scope and remove stale changesets from the same scope.",
+    default: "",
+  },
 } as const;
 
 /**

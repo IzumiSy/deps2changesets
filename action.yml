@@ -18,6 +18,10 @@ inputs:
     description: "Additional dependency types to include (comma-separated: prod, dev, peer, optional)"
     required: false
     default: "prod"
+  scope:
+    description: "Group generated changesets. Defaults to the current PR number on pull request runs."
+    required: false
+    default: ""
   commit-message:
     description: "Commit message for the changeset"
     required: false
@@ -41,12 +45,21 @@ runs:
 
     - name: Generate changeset
       shell: bash
-      run: npx @izumisy/deps2changesets --range ${{ inputs.range }} --release-type ${{ inputs.release-type }} --include-deps=${{ inputs.include-deps }}
+      env:
+        RANGE: ${{ inputs.range }}
+        RELEASE_TYPE: ${{ inputs.release-type }}
+        INCLUDE_DEPS: ${{ inputs.include-deps }}
+        SCOPE: ${{ inputs.scope }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        if [[ -z "$SCOPE" && -n "$PR_NUMBER" ]]; then SCOPE="pr-$PR_NUMBER"; fi
+        args=(--range "$RANGE" --release-type "$RELEASE_TYPE" --include-deps "$INCLUDE_DEPS")
+        if [[ -n "$SCOPE" ]]; then args+=(--scope "$SCOPE"); fi
+        npx @izumisy/deps2changesets "${args[@]}"
 
     - name: Commit changeset
       if: inputs.skip_commit != 'true'
       uses: suzuki-shunsuke/commit-action@5eaa5ecce3ffe93d09a85b946dc5136e3713b1b7 # v1.1.0
       with:
         commit_message: ${{ inputs.commit-message }}
-        files: ".changeset/*.md"
         fail_on_self_push: false
