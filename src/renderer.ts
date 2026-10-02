@@ -47,15 +47,18 @@ export function renderChangedPackages(changedPackages: PublicChangedPackage[]): 
 /**
  * Render the final result message
  */
-export function renderResult(count: number, dryRun: boolean): void {
-  if (count === 0) {
+export function renderResult(count: number, dryRun: boolean, removedCount = 0): void {
+  if (count === 0 && removedCount === 0) {
     console.log("No dependency changes detected.");
     return;
   }
 
   if (dryRun) {
-    console.log(`ℹ Would create ${count} changeset(s) (dry-run)`);
+    console.log(`ℹ Would sync ${count} changeset(s) (dry-run)`);
+    if (removedCount > 0) console.log(`ℹ Would remove ${removedCount} stale changeset(s)`);
   } else {
-    console.log(`${colors.green}✓${colors.reset} Created ${count} changeset(s)`);
+    console.log(`${colors.green}✓${colors.reset} Synced ${count} changeset(s)`);
+    if (removedCount > 0)
+      console.log(`${colors.green}✓${colors.reset} Removed ${removedCount} stale changeset(s)`);
   }
 }
