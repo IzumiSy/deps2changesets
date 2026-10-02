@@ -1,0 +1,43 @@
+name: Lint GitHub Actions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+      - "action.yml"
+      - "aqua.yaml"
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "action.yml"
+      - "aqua.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - uses: aquaproj/aqua-installer@96a9bc20066c5bf5e275b41019cfc165b25f4e2e # v4.0.5
+        with:
+          aqua_version: v2.62.3
+
+      - run: actionlint
+      - run: ghalint run
+      - run: ghalint run-action action.yml
+      - name: Run zizmor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: zizmor --no-progress --collect=workflows,actions .
