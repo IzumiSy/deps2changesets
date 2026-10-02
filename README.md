@@ -56,6 +56,7 @@ npx @izumisy/deps2changesets --range main..
 | `--cwd`          | `-c`  | Working directory                                                                           | Current directory |
 | `--dry-run`      | `-d`  | Preview changes without creating changesets                                                 | `false`           |
 | `--include-deps` | `-i`  | Additional dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod`            |
+| `--scope`        | `-s`  | Group generated changesets; stale changesets in this scope are removed                      | —                 |
 
 > **Note:** By default, only production `dependencies` are included in changesets. Use `--include-deps` to include changes from `devDependencies`, `peerDependencies`, or `optionalDependencies`.
 
@@ -82,6 +83,9 @@ npx @izumisy/deps2changesets --include-deps=dev
 
 # Include both devDependencies and peerDependencies changes
 npx @izumisy/deps2changesets --include-deps=dev,peer
+
+# Synchronize changesets owned by one dependency-update group
+npx @izumisy/deps2changesets --scope renovate-react-19
 ```
 
 ## How it Works
@@ -105,15 +109,17 @@ Dependencies updated
 - Added [axios](https://www.npmjs.com/package/axios) (^1.4.0)
 ```
 
-### Generated changeset filenames
+### Generated changeset filenames and scopes
 
-Changesets are written as `.changeset/deps2changesets-<hash>.md`, for example `.changeset/deps2changesets-1234abcd.md`.
+Without a scope, changesets are written as `.changeset/deps2changesets-<hash>.md`, for example `.changeset/deps2changesets-1234abcd.md`.
+
+With `--scope pr-123`, filenames include the scope: `.changeset/deps2changesets--pr-123--<hash>.md`. Each execution synchronizes only files in its scope: it creates the current dependency changesets and removes stale ones from that same scope. Files from other scopes and unscoped handwritten changesets are never changed. Existing unscoped generated files are not adopted, so remove them manually when moving an existing PR to a scope. Omitting `--scope` preserves the create-only behavior.
 
 `<hash>` is the first eight hexadecimal characters of the SHA-256 hash of the package name, release type, and generated summary. The same dependency update therefore always has the same filename and is not duplicated when CI is re-run. If that filename already exists with different content, the command fails rather than overwriting it.
 
 ## GitHub Actions
 
-You can automate changeset generation for Dependabot or Renovate PRs using the provided GitHub Action. Re-running the same dependency update is idempotent: it reuses the existing changeset instead of adding another one.
+You can automate changeset generation for Dependabot or Renovate PRs using the provided GitHub Action. On pull request runs, the action uses the PR number as its scope, so re-running after a rebase also removes changesets that no longer match the PR's dependency diff.
 
 ```yaml
 # .github/workflows/dependabot-changeset.yml
@@ -149,6 +155,7 @@ Remember to set `versioning-strategy: increase` to reflect version updates on pa
 | ---------------- | -------------------------------------------------------------------------------- | -------------------------------------------- |
 | `release-type`   | Release type for changesets (`patch`, `minor`, `major`)                          | `patch`                                      |
 | `include-deps`   | Dependency types to include (comma-separated: `prod`, `dev`, `peer`, `optional`) | `prod`                                       |
+| `scope`          | Changeset group; defaults to the PR number on pull request runs                  | PR number                                    |
 | `commit-message` | Commit message for the changeset                                                 | `chore: add changeset for dependency update` |
 | `skip_commit`    | Skip committing the generated changesets                                         | `false`                                      |
 

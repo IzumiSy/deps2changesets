@@ -49,7 +49,7 @@ const command = define({
   toKebab: true,
   args: commandArgs,
   async run(ctx) {
-    const { range, releaseType, cwd, dryRun, includeDeps } = ctx.values;
+    const { range, releaseType, cwd, dryRun, includeDeps, scope } = ctx.values;
     const { from, to } = parseGitRange(range);
     const includedDepTypes = parseIncludeDeps(includeDeps);
 
@@ -83,12 +83,15 @@ const command = define({
     // Render the changes
     renderChangedPackages(publicPackages);
 
-    // Create changesets (unless dry-run)
-    if (!dryRun) {
-      await createChangesets(publicPackages, releaseType as "patch" | "minor" | "major", cwd);
-    }
+    const result = await createChangesets(
+      publicPackages,
+      releaseType as "patch" | "minor" | "major",
+      cwd,
+      scope || undefined,
+      dryRun,
+    );
 
-    renderResult(publicPackages.length, dryRun);
+    renderResult(publicPackages.length, dryRun, result.removed.length);
   },
 });
 
