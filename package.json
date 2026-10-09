@@ -40,7 +40,7 @@
     "@changesets/write": "^1.0.1",
     "@types/node": "^26.6.4",
     "memfs": "^4.79.0",
-    "oxfmt": "^0.71.0",
+    "oxfmt": "^0.72.0",
     "oxlint": "^1.86.0",
     "tsdown": "^0.23.0",
     "typescript": "^5.9.3",
