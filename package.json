@@ -33,7 +33,7 @@
   "dependencies": {
     "@manypkg/get-packages": "^3.1.0",
     "consola": "^3.4.2",
-    "gunshi": "^0.27.5",
+    "gunshi": "^0.37.3",
     "simple-git": "^4.0.1"
   },
   "devDependencies": {
