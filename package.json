@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@changesets/write": "^1.0.1",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "memfs": "^4.80.0",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.86.0",
